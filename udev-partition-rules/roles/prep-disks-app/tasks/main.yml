@@ -1,6 +1,7 @@
 
 - name: getting the disk uuid
   command: "/lib/udev/scsi_id --whitelisted --device={{ tichkur_disk }}"
+  changed_when: false
   register: disk_uuid
 
 - template:
