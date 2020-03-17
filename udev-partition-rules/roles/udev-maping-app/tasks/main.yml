@@ -1,0 +1,12 @@
+
+- name: getting the disk uuid
+  command: "/lib/udev/scsi_id --whitelisted --device={{ tichkur_disk }}"
+  register: disk_uuid
+
+- template:
+    src: "20-asm-permission-APP-{{ ora_type }}-rules.j2"
+    dest: /etc/udev/rules.d/20-asm-permission.rules
+    owner: root
+    group: root
+    mode: '0776'
+# need handler for reload rules

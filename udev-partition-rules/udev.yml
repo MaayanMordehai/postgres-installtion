@@ -1,0 +1,9 @@
+- hosts: 52.142.163.178 
+  remote_user: root
+  gather_facts: no
+  tasks:
+
+    - import_role:
+        name: prep-disks-app
+      when: app|bool
+      tags: udev-maping

@@ -1,0 +1,5 @@
+KERNEL=="sd?", ENV{ID_SERIAL}=="", IMPORT{program}="/lib/udev/scsi_id --whitelisted --device=/dev/%k"
+KERNEL=="sd??", ENV{ID_SERIAL}=="", IMPORT{parent}=="ID_*"
+{% for part,dest in tichkur_partitions_and_dest.items() %}
+KERNEL=="sd?{{ part }}", ENV{ID_SERIAL}=="{{ disk_uuid.stdout }}", SYMLINK+="mapper/ora_asm_{{ dest }}", OWNER:="{{ grid_user }}", MODE="0660"
+{% endfor %}
