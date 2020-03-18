@@ -5,15 +5,27 @@
   gather_facts: no
   tasks:
 
-    - import_role:
-        name: cre-os-user
-      vars:
-        os_user: "{{ pg_os_user }}"
-      tags: cre-pg-user
+    - debug:
+        var: pg_rpms
 
     - import_role:
-        name: prep-dirs
-      tags: prep-dirs
+        name: inst-rpms
+      vars:
+        repos: "{{ pg_repos }}"
+        rpms: "{{ pg_rpms }}"
+      tags: inst-rpms
+
+#    - import_role:
+#        name: cre-os-user
+#      tags: cre-pg-user
+
+#    - import_role:
+#        name: prep-dirs
+#      tags: prep-dirs
+
+#    - import_role:
+#        name: postgresql-params
+#      tags: postgresql-params
 
 # postgres automation - 
 # 1. disable transparent hugepages (?)
@@ -26,5 +38,4 @@
 # 8. pg_hba.conf
 # 9. adding pg_stat_statement, postgis extentions
 # 10. change tablespace of template 1
-# 
-#
+

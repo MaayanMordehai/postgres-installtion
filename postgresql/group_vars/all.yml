@@ -1,6 +1,6 @@
 rmt_user: dba
 
-pg_os_user: postgres
+os_user: postgres
 
 base_dir: "/postgres/10"
 
@@ -19,3 +19,17 @@ fs_vg: vgpg
 
 fs_lv: pglv
 
+pg_full_version: 10.7
+
+pg_major_version: "{{ ((pg_full_version|string).split('.'))[0] }}"
+ 
+pg_repos:
+  - { "name": "pg{{ pg_major_version }}", "base_url": "file:///rpm/10/redhat/pg10", "desc": "Postgresql Repo - version {{ pg_major_version }}" }
+
+
+pg_rpms:
+  - "postgresql{{ pg_major_version }}-libs-{{ pg_full_version }}"
+  - "postgresql{{ pg_major_version }}-server-{{ pg_full_version }}"
+  - "postgresql{{ pg_major_version }}-contrib-{{ pg_full_version }}"
+  - "pg_top{{ pg_major_version }}"
+  - "pgcenter"
