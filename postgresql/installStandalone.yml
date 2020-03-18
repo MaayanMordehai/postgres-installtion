@@ -15,7 +15,16 @@
         name: prep-dirs
       tags: prep-dirs
 
-
-# PREP-DIRS
-# PREP-USERS
-# DISABLE SELINUX
+# postgres automation - 
+# 1. disable transparent hugepages (?)
+# 2. install rpms
+# 3. change user definitions - including bash profile
+# 4. prep dirs V
+# 5. change systemd postgres service
+# 6. initdb --data-checksums
+# 7. postgresql.conf params
+# 8. pg_hba.conf
+# 9. adding pg_stat_statement, postgis extentions
+# 10. change tablespace of template 1
+# 
+#
