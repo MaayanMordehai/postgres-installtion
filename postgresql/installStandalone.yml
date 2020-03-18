@@ -19,9 +19,9 @@
         name: config-os-user
       tags: config-os-user
 
-#    - import_role:
-#        name: prep-dirs
-#      tags: prep-dirs
+    - import_role:
+        name: prep-dirs
+      tags: prep-dirs
 
 #    - import_role:
 #        name: postgresql-params
@@ -29,8 +29,8 @@
 
 # postgres automation - 
 # 1. disable transparent hugepages (?)
-# 2. install rpms
-# 3. change user definitions - including bash profile
+# 2. install rpms V
+# 3. change user definitions - including bash profile V
 # 4. prep dirs V
 # 5. change systemd postgres service
 # 6. initdb --data-checksums
