@@ -30,18 +30,18 @@
       tags: cfg-pg-srv
 
 #    - import_role:
-#        name: postgresql-params
-#      tags: postgresql-params
+#        name: pg-std-prms
+#      tags: pg-std-prms
 
-# postgres automation - 
-# 1. disable transparent hugepages (?)
-# 2. install rpms V
-# 3. change user definitions - including bash profile V
-# 4. prep dirs V
-# 5. change systemd postgres service V
-# 6. initdb --data-checksums V
-# 7. postgresql.conf params
-# 8. pg_hba.conf
-# 9. adding pg_stat_statement, postgis extentions
-# 10. change tablespace of template 1
+# postgres standalone automation - 
+# 1. install rpms V
+# 2. change user definitions - including bash profile V
+# 3. prep dirs V
+# 4. change systemd postgres service V
+# 5. initdb --data-checksums V
+# 6. postgresql.conf params
+# 7. pg_hba.conf
+# 8. adding pg_stat_statement, postgis extentions
+# 9. change tablespace of template 1
+
 

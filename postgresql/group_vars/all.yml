@@ -33,3 +33,19 @@ pg_rpms:
   - "postgresql{{ pg_major_version }}-contrib-{{ pg_full_version }}"
   - "pg_top{{ pg_major_version }}"
   - "pgcenter"
+
+#need to think if here or in role
+pg_params:
+  - { "name": "default_tablespace", "value": "app_tbs" }
+  - { "name": "checkpoint_completion_target", "value": "0.9" }
+  - { "name": "shared_preload_libraries", "value": "pg_stat_statements" }
+  - { "name": "pg_stat_statements.max", "value": "1000" }
+  - { "name": "pg_stat_statements.track", "value": "all" }
+  - { "name": "listen_addresses", "value": "'*'" } # ask moti, should be 0.0.0.0 ? 
+  - { "name": "track_activity_query_size", "value": "30720" }
+  - { "name": "effective_cache_size", "value": "" } # calc
+  - { "name": "shared_buffers", "value": "" } # calc
+
+
+
+
