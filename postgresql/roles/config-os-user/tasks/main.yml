@@ -1,0 +1,26 @@
+
+- name: Changing postgres group to be by standart
+  group:
+    name: "{{ pg_os_group }}"
+    gid: "{{ group_id }}"
+    state: present
+  tags: pg-user
+
+- name: Changing postgres user to be by standart
+  user:
+    name: "{{ pg_os_user }}"
+    uid: "{{ user_id }}"
+    shell: "{{ user_shell }}"
+    password: "{{ user_hashed_pass }}"
+    generate_ssh_key: yes
+    home: "{{ home_dir }}"
+    state: present
+  tags: pg-user
+
+- name: Deploy bash profile
+  template:
+    src: pgsql_profile.j2
+    dest: "{{ pg_bash_profile_path }}" 
+    owner: "{{ pg_os_user }}"
+    mode: "0700"
+  tags: pg-bash-prof

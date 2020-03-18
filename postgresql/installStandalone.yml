@@ -15,9 +15,9 @@
         rpms: "{{ pg_rpms }}"
       tags: inst-rpms
 
-#    - import_role:
-#        name: cre-os-user
-#      tags: cre-pg-user
+    - import_role:
+        name: config-os-user
+      tags: config-os-user
 
 #    - import_role:
 #        name: prep-dirs

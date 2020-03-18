@@ -1,0 +1,8 @@
+PGDATA="{{ pg_data }}"
+export PGDATA
+
+PATH=/usr/pgsql-{{ pg_major_version }}/bin/:$PATH
+export PATH
+
+PS1='[\u@\h \W]$ '
+export PS1
