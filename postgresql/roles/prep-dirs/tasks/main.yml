@@ -1,0 +1,45 @@
+- name: Create a new primary partition for LVM
+  parted:
+    device: "{{ fs_disk }}"
+    number: 1
+    flags: [ lvm ]
+    state: present
+  tags: cre-patitions
+
+- name: Create new vg with the partition
+  lvg:
+    vg: "{{ fs_vg }}"
+    pvs: "{{ fs_disk }}1"
+  tags: lvm
+
+- name: Create new lv for fs
+  lvol:
+    vg: "{{ fs_vg }}"
+    lv: "{{ fs_lv }}"
+    size: +100%FREE
+  tags: lvm
+
+- name: Create xfs fs on lv
+  filesystem:
+    dev: "/dev/mapper/{{ fs_vg }}-{{ fs_lv }}"
+    fstype: "xfs"
+  tags: fs
+
+- name: Mount the lv to the base directory
+  mount:
+    path: "{{ base_dir }}"
+    src: "/dev/mapper/{{ fs_vg }}-{{ fs_lv }}"
+    fstype: "xfs"
+    state: mounted
+  tags: mount
+
+- name: Create sub directories
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: "{{ item.mode }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group|default(item.owner) }}"
+  loop: "{{ dirs_info }}"
+  tags: sub-dirs
+

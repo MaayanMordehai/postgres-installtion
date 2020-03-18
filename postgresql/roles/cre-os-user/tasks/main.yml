@@ -1,0 +1,9 @@
+
+- name: Creating os user
+  user:
+    name: "{{ os_user }}"
+    uid: "{{ user_id }}"
+    shell: "{{ user_shell }}"
+    password: "{{ user_hashed_pass }}"
+    generate_ssh_key: yes
+    home: "{{ home_dir }}"

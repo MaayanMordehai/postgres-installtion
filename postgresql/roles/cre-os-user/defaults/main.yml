@@ -1,0 +1,5 @@
+os_user: postgres
+user_hashed_pass: '$6$3GUGQQ3W$hDgP9Iv8wGlClWF4eo2yJ1wUfvkcb50JpUpE2R8IRad6D25iJS.Ld2b9oNbO4o5wkMg/6uEcBrb.jpUPNRNzn0'
+user_id: 203
+home_dir: "/home/{{ os_user }}"
+user_shell: "/bin/bash"

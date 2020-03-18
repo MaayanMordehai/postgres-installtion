@@ -1,0 +1,21 @@
+## CHILD PLAY - INSTALL POSTGRESQL STANDALONE ##
+- hosts: "{{ cluster_name }}"
+  remote_user: "{{ rmt_user }}"
+  become: yes
+  gather_facts: no
+  tasks:
+
+    - import_role:
+        name: cre-os-user
+      vars:
+        os_user: "{{ pg_os_user }}"
+      tags: cre-pg-user
+
+    - import_role:
+        name: prep-dirs
+      tags: prep-dirs
+
+
+# PREP-DIRS
+# PREP-USERS
+# DISABLE SELINUX

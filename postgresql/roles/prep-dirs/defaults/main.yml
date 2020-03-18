@@ -1,0 +1,7 @@
+fs_disk: /dev/sdc
+
+fs_vg: vg01
+
+fs_lv: lolv
+
+dirs_info: {}

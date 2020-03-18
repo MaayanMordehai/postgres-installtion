@@ -1,0 +1,21 @@
+rmt_user: dba
+
+pg_os_user: postgres
+
+base_dir: "/postgres/10"
+
+pg_tbs: "{{ base_dir }}/tbs/app_tbs"
+
+pg_data: "{{ base_dir }}/data"
+
+dirs_info:
+  - { "path": "{{ base_dir }}", "mode": "0644", "owner": "{{ pg_os_user }}" }
+  - { "path": "{{ pg_data }}", "mode": "0644", "owner": "{{ pg_os_user }}" }
+  - { "path": "{{ pg_tbs }}", "mode": "0644", "owner": "{{ pg_os_user }}" }
+
+replication_wal_dir: { "path": "{{ pg_base }}/wals_from_primary", "mode": "0644", "owner": "{{ pg_os_user }}"  }
+
+fs_vg: vgpg
+
+fs_lv: pglv
+
