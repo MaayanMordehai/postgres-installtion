@@ -1,0 +1,2 @@
+pg_srv_name: "postgresql-{{ pg_major_version }}.service"
+pg_srv_path: "/usr/lib/systemd/system"

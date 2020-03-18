@@ -1,0 +1,15 @@
+- name: Change the Service PGDATA env to the right one
+  ini_file:
+    create: no
+    no_extra_spaces: yes
+    path: "{{ pg_srv_path }}/{{ pg_srv_name }}"
+    section: "Service"
+    option: "Environment=PGDATA"
+    value: "{{ pg_data }}"
+
+- name: apply the changes and enable postgresql service
+  service:
+    name: "{{ pg_srv_name }}"
+    enabled: yes
+    daemon_reload: yes
+    state: started

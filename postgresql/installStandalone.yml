@@ -13,12 +13,21 @@
       tags: inst-rpms
 
     - import_role:
-        name: config-os-user
-      tags: config-os-user
+        name: cfg-os-user
+      tags: cfg-os-user
 
     - import_role:
         name: prep-dirs
       tags: prep-dirs
+
+    - name: Initiate Cluster
+      command: "/usr/pgsql-{{ pg_major_version }}/bin/initdb --pgdata {{ pg_data }} --data-checksums"
+      become_user: "{{ pg_os_user }}"
+      tags: initdb
+
+    - import_role:
+        name: cfg-pg-srv
+      tags: cfg-pg-srv
 
 #    - import_role:
 #        name: postgresql-params
@@ -29,8 +38,8 @@
 # 2. install rpms V
 # 3. change user definitions - including bash profile V
 # 4. prep dirs V
-# 5. change systemd postgres service
-# 6. initdb --data-checksums
+# 5. change systemd postgres service V
+# 6. initdb --data-checksums V
 # 7. postgresql.conf params
 # 8. pg_hba.conf
 # 9. adding pg_stat_statement, postgis extentions
