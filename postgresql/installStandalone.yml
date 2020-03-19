@@ -21,7 +21,10 @@
       tags: prep-dirs
 
     - name: Initiate Cluster
-      command: "/usr/pgsql-{{ pg_major_version }}/bin/initdb --pgdata {{ pg_data }} --data-checksums"
+      command: >
+             "/usr/pgsql-{{ pg_major_version }}/bin/initdb
+              --pgdata {{ pg_data }} 
+              --data-checksums"
       become_user: "{{ pg_os_user }}"
       tags: initdb
 
@@ -29,9 +32,59 @@
         name: cfg-pg-srv
       tags: cfg-pg-srv
 
-#    - import_role:
-#        name: pg-std-prms
-#      tags: pg-std-prms
+    - name: "Getting needed params"
+      setup:
+        gather_subset: "!all,!min,hardware"
+      tags: 
+        - effective-cache-size
+        - shared-buffers
+        - cfg-pg-prms
+
+    - name: "finding the effective cache size recommended"
+      set_fact:
+        effective_cache_size: "{{ (ansible_memtotal_mb * 0.75)|round|int|string + \"MB\"}}"
+      tags:
+        - effective-cache-size
+        - cfg-pg-prms
+
+    - name: "finding the shared_buffers size recommended "
+      set_fact:
+        shared_buffers: "{{ [ (ansible_memtotal_mb*0.25)|round|int , max_shared_buffer_size_mb|int ]|min|string + \"MB\" }}"
+      tags:
+        - shared-buffers
+        - cfg-pg-prms
+
+    - name: "adding the specific params to the param list with the standart value"
+      set_fact:
+        pg_standalone_params: "{{ pg_standalone_params + [ item ] }}"
+      when: item.value is defined
+      loop:
+        - { "name": "shared_buffers", "value": "{{ shared_buffers }}" }
+        - { "name":  "effective_cache_size", "value": "{{ effective_cache_size }}" }
+      tags:
+        - effective-cache-size
+        - shared-buffers
+        - cfg-pg-prms
+
+    - import_role:
+        name: cfg-pg-prms
+      vars:
+        pg_params: "{{ pg_standalone_params }}"
+        pg_hba_params: "{{ pg_hba_standalone_params }}"
+      tags: 
+        - cfg-pg-prms
+        - effective-cache-size
+        - shared-buffers
+
+    - import_role:
+        name: cfg-pg-prms
+      vars:
+        pg_params: "{{ pg_stat_statements_params }}"
+      when: pg_stat_statements_extenstion|bool
+      tags:
+        - cfg-pg-prms
+        - pg_stat_statements
+
 
 # postgres standalone automation - 
 # 1. install rpms V
@@ -39,8 +92,8 @@
 # 3. prep dirs V
 # 4. change systemd postgres service V
 # 5. initdb --data-checksums V
-# 6. postgresql.conf params
-# 7. pg_hba.conf
+# 6. postgresql.conf params V
+# 7. pg_hba.conf V
 # 8. adding pg_stat_statement, postgis extentions
 # 9. change tablespace of template 1
 
