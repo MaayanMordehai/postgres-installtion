@@ -25,14 +25,18 @@ fs_vg: vgpg
 fs_lv: pglv
 
 pg_repos:
-  - { "name": "pg{{ pg_major_version }}", "base_url": "file:///rpm/10/redhat/pg10", "desc": "Postgresql Repo - version {{ pg_major_version }}" }
+  - { "name": "pg{{ pg_major_version }}", "base_url": "file:///rpm/{{ pg_major_version }}/redhat/pg{{ pg_major_version }}", "desc": "Postgresql Repo - version {{ pg_major_version }}" }
 
 pg_rpms:
   - "postgresql{{ pg_major_version }}-libs-{{ pg_full_version }}"
   - "postgresql{{ pg_major_version }}-server-{{ pg_full_version }}"
   - "postgresql{{ pg_major_version }}-contrib-{{ pg_full_version }}"
+#  - "postgresql{{ pg_major_version }}-{{ pg_full_version }}"
   - "pg_top{{ pg_major_version }}"
   - "pgcenter"
+  - "python2-psycopg2"
+#  - "postgis*_{{ pg_major_version }}"
+
 
 
 pg_standalone_params:
@@ -40,10 +44,6 @@ pg_standalone_params:
   - { "name": "checkpoint_completion_target", "value": "0.9" }
   - { "name": "listen_addresses", "value": "'*'" } # check when going back if it * or 0.0.0.0
   - { "name": "track_activity_query_size", "value": "30720" }
-
-pg_stat_statements_extenstion: yes
-
-pg_stat_statements_params:
   - { "name": "shared_preload_libraries", "value": "pg_stat_statements" }
   - { "name": "pg_stat_statements.max", "value": "1000" }
   - { "name": "pg_stat_statements.track", "value": "all" }
@@ -53,5 +53,18 @@ pg_hba_standalone_params:
   - { "conn_type": "host", "database": "all", "user": "all", "address": "0.0.0.0/0", "auth_method": "md5" }
 
 max_shared_buffer_size_mb: 8192
+extentions: ["pg_stat_statements", "postgis"]
 
+postgres_db_admin: "postgres"
+
+# vaultPass, postgres-pass
+# create with ansible-vault encrypt_string 'postgres-pass' --name admin_user_pass
+# need to put postgres md5 hash insted
+admin_user_pass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          37626166613634656636323330643631666431656662343564626165383165373633663863366537
+          3334346563653866323133303232353362646331306430300a346663303631333965303865313737
+          61353732613838616534633762383765346538323036333539376166646139643930383138633839
+          6461353764363730390a366136663535616636643639643436333531383038616531396631316437
+          3338
 

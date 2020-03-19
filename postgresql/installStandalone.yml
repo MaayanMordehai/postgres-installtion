@@ -21,10 +21,7 @@
       tags: prep-dirs
 
     - name: Initiate Cluster
-      command: >
-             "/usr/pgsql-{{ pg_major_version }}/bin/initdb
-              --pgdata {{ pg_data }} 
-              --data-checksums"
+      command: "/usr/pgsql-{{ pg_major_version }}/bin/initdb --pgdata {{ pg_data }} --data-checksums"
       become_user: "{{ pg_os_user }}"
       tags: initdb
 
@@ -49,7 +46,7 @@
 
     - name: "finding the shared_buffers size recommended "
       set_fact:
-        shared_buffers: "{{ [ (ansible_memtotal_mb*0.25)|round|int , max_shared_buffer_size_mb|int ]|min|string + \"MB\" }}"
+        shared_buffers: "{{ [ (ansible_memtotal_mb*0.25)|round|int, max_shared_buffer_size_mb|int ]|min|string + \"MB\" }}"
       tags:
         - shared-buffers
         - cfg-pg-prms
@@ -76,16 +73,29 @@
         - effective-cache-size
         - shared-buffers
 
-    - import_role:
-        name: cfg-pg-prms
-      vars:
-        pg_params: "{{ pg_stat_statements_params }}"
-      when: pg_stat_statements_extenstion|bool
-      tags:
-        - cfg-pg-prms
-        - pg_stat_statements
+    - name: Change admin user password
+      postgresql_user:
+        name: "{{ postgres_db_admin }}"
+        password: "{{ admin_user_pass }}"
+        encrypted: yes
+      become_user: "{{ pg_os_user }}"
+      environment:
+        PGDATA: "{{ pg_data }}"
+      tags: pg-db-pass
 
-
+#    - name: Adding the extenstions to postrges db
+#      postgresql_ext:
+#        db: "{{ admin_db_user }}"
+#        login_user: "{{ admin_db_user }}"
+#        name: "{{ item }}"
+#        state: present
+#      loop: "{{ extentions }}"
+#      become_user: "{{ pg_os_user }}"
+#      environment:
+#        PGDATA: "{{ pg_data }}"
+#      tags:
+#        - pg_extentions
+      
 # postgres standalone automation - 
 # 1. install rpms V
 # 2. change user definitions - including bash profile V
@@ -94,7 +104,11 @@
 # 5. initdb --data-checksums V
 # 6. postgresql.conf params V
 # 7. pg_hba.conf V
-# 8. adding pg_stat_statement, postgis extentions
-# 9. change tablespace of template 1
+# 8. change postgres password V
+# 9. create tablespace
+# 10. adding pg_stat_statement, postgis extentions
+# 11. change tablespace of template 1
+# 12. create database and user according to our permissions module
+
 
 
