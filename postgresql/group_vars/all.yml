@@ -41,13 +41,6 @@ pg_rpms:
   - "python2-psycopg2"
 #  - "postgis*_{{ pg_major_version }}"
 
-pg_stat_statement_params:
-  - { "name": "shared_preload_libraries", "value": "pg_stat_statements" }
-  - { "name": "pg_stat_statements.max", "value": "1000" }
-  - { "name": "pg_stat_statements.track", "value": "all" }
-
-
-
 max_shared_buffer_size_mb: 8192
 extentions: ["pg_stat_statements", "postgis"]
 
@@ -64,3 +57,4 @@ admin_user_pass: !vault |
           6461353764363730390a366136663535616636643639643436333531383038616531396631316437
           3338
 
+extentions: [ "pg_stat_statement", "postgis" ]
