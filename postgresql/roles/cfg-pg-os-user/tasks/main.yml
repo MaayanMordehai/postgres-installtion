@@ -13,7 +13,7 @@
     shell: "{{ user_shell }}"
     password: "{{ user_hashed_pass }}"
     generate_ssh_key: yes
-    home: "{{ home_dir }}"
+    home: "{{ pg_home_dir }}"
     state: present
   tags: pg-user
 

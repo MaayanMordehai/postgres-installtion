@@ -1,0 +1,12 @@
+
+- name: "get the public key"
+  slurp:
+    src: "~/.ssh/id_rsa.pub"
+  register: pub_key
+
+- name: "register the public key to the authorized keys files"
+  authorized_key:
+    user: "{{ item.user }}"
+    key: "{{ pub_key['content'] | b64decode  }}"
+  delegate_to: "{{ item.host }}"
+  loop: "{{ dest_hosts_users_nopass }}"

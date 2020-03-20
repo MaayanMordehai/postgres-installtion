@@ -77,6 +77,9 @@ admin_user_pass: !vault |
 # REPLICA / STANDALONE
 pg_type: "REPLICA"
 
+# postgres home directory
+home_dir: "/var/lib/pgsql"
+
 required_params:
   - "cluster_name"
   - "version"
@@ -85,3 +88,4 @@ required_params:
 
 replica_required_params:
   - "master_host"
+
