@@ -1,7 +1,7 @@
 - name: "getting a list of all the /etc/hosts lined that we need to add"
   set_fact:
     hosts_recordes:  "{{ hosts_recordes|default([]) + \
-                         [ { 'ip': hostvars[ item ]['ansible_all_ipv4_addresses'][0], \
+                         [ { 'ip': hostvars[ item ]['ansible_default_ipv4']['address'], \
                              'hostname': hostvars[ item ]['ansible_hostname'], \
                              'hostname_with_domain': hostvars[ item ]['ansible_fqdn'] } ] }}"
   loop: "{{ ansible_play_batch }}"
