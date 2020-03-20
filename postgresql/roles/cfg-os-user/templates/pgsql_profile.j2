@@ -1,7 +1,7 @@
 PGDATA="{{ pg_data }}"
 export PGDATA
 
-PATH=/usr/pgsql-{{ pg_major_version }}/bin/:$PATH
+PATH="{{ pg_bin }}":$PATH
 export PATH
 
 PS1='[\u@\h \W]$ '

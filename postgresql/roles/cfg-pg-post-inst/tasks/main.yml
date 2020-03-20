@@ -1,0 +1,83 @@
+- name: "Getting needed info for pg basic params"
+  setup:
+    gather_subset: "!all,!min,hardware"
+  tags: 
+    - postgresql-params
+    - effective_cache_size
+    - shared_buffers
+
+- name: "finding the effective cache size recommended"
+  set_fact:
+    effective_cache_size: "{{ (ansible_memtotal_mb * 0.75)|round|int|string + \"MB\"}}"
+  tags:
+    - postgresql-params
+    - effective_cache_size
+
+- name: "finding the shared_buffers size recommended "
+  set_fact:
+    shared_buffers: "{{ [ (ansible_memtotal_mb*0.25)|round|int, max_shared_buffer_size_mb|int ]|min|string + \"MB\" }}"
+  tags:
+    - postgresql-params
+    - shared_buffers
+
+- name: "adding the specific params to the param list with the standart value"
+  set_fact:
+    pg_post_inst_params: "{{ pg_post_inst_params + [ item ] }}"
+  when: item.value is defined
+  loop:
+    - { "name": "shared_buffers", "value": "{{ shared_buffers }}" }
+    - { "name":  "effective_cache_size", "value": "{{ effective_cache_size }}" }
+  tags: 
+    - postgresql-params
+    - shared_buffers
+    - effective_cache_size
+
+# this module change the parameters with alter system - which change the postgresql.auto.conf
+- name: "changing the pg parameters in postgresql.auto.conf"
+  postgresql_set:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+  loop: "{{ pg_post_inst_params }}"
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
+  notify: Restart pg
+  tags: pg-params
+
+#### in case someone won't like the better way - i'm keeping this as comments for now.
+#- name: "changing the pg parameters in postgresql.conf"
+#  lineinfile:
+#    path: "{{ pg_data }}/postgresql.conf"
+#    insertafter: "^(#{{ item.name }}=|#{{ item.name }} =|# {{ item.name }}=|# {{ item.name }} =)"
+#    regexp: "^({{ item.name }}=|{{ item.name }} =)"
+#    line: "{{ item.name }} = {{ item.value }}"
+#  loop: "{{ pg_post_inst_params }}"
+#  notify: Restart pg
+#  tags: postgresql-params
+
+- name: "adding the connection needed to pg_hba.conf"
+  postgresql_pg_hba:
+    dest: "{{ pg_data }}/pg_hba.conf"
+    contype: "{{ item.conn_type }}"
+    databases: "{{ item.database }}"
+    users: "{{ item.user }}"
+    address: "{{ item.address }}"
+    method: "{{ item.auth_method }}"
+    mode: "0600"
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
+  loop: "{{ pg_hba_post_inst_params }}"
+  notify: Reload pg
+  tags: pg-hba
+
+- name: "Change admin user password"
+  postgresql_user:
+    name: "{{ postgres_db_admin }}"
+    password: "{{ admin_user_pass }}"
+    encrypted: yes
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
+  tags: pg-db-pass
+

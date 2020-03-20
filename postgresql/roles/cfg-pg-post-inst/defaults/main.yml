@@ -1,0 +1,11 @@
+
+pg_os_user: "postgres"
+
+pg_post_inst_params:
+  - { "name": "checkpoint_completion_target", "value": "0.9" }
+  - { "name": "listen_addresses", "value": "*" } # check when going back if it * or 0.0.0.0
+  - { "name": "track_activity_query_size", "value": "30720" }
+
+pg_hba_post_inst_params:
+  - { "conn_type": "host", "database": "all", "user": "all", "address": "0.0.0.0/0", "auth_method": "md5" }
+

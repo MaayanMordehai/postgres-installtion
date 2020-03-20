@@ -6,3 +6,4 @@ group_id: 26
 home_dir: "/var/lib/pgsql"
 user_shell: "/bin/bash"
 pg_bash_profile_path: "{{ home_dir }}/.pgsql_profile"
+pg_bin: "/usr/pgsql-{{ pg_major_version }}/bin"

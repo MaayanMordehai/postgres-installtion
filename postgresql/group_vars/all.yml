@@ -6,17 +6,21 @@ pg_full_version: 10.7
 
 pg_major_version: "{{ ((pg_full_version|string).split('.'))[0] }}"
 
+pg_bin: "/usr/pgsql-{{ pg_major_version }}/bin"
+
 base_dir: "/postgres/{{ pg_major_version }}"
 
-pg_tbs: "{{ base_dir }}/tbs/app_tbs"
+pg_tbs: "{{ base_dir }}/tbs"
 
 pg_data: "{{ base_dir }}/data"
 
 dirs_info:
   - { "path": "/postgres", "mode": "0775", "owner": "{{ pg_os_user }}" }
   - { "path": "{{ base_dir }}", "mode": "0775", "owner": "{{ pg_os_user }}" }
-  - { "path": "{{ pg_data }}", "mode": "0775", "owner": "{{ pg_os_user }}" }
-  - { "path": "{{ pg_tbs }}", "mode": "0775", "owner": "{{ pg_os_user }}" }
+  - { "path": "{{ pg_data }}", "mode": "0700", "owner": "{{ pg_os_user }}" }
+  - { "path": "{{ pg_tbs }}", "mode": "0700", "owner": "{{ pg_os_user }}" }
+
+pg_srv_name: "postgresql-{{ pg_major_version }}.service"
 
 replication_wal_dir: { "path": "{{ pg_base }}/wals_from_primary", "mode": "0644", "owner": "{{ pg_os_user }}"  }
 
@@ -37,20 +41,12 @@ pg_rpms:
   - "python2-psycopg2"
 #  - "postgis*_{{ pg_major_version }}"
 
-
-
-pg_standalone_params:
-  - { "name": "default_tablespace", "value": "app_tbs" }
-  - { "name": "checkpoint_completion_target", "value": "0.9" }
-  - { "name": "listen_addresses", "value": "'*'" } # check when going back if it * or 0.0.0.0
-  - { "name": "track_activity_query_size", "value": "30720" }
+pg_stat_statement_params:
   - { "name": "shared_preload_libraries", "value": "pg_stat_statements" }
   - { "name": "pg_stat_statements.max", "value": "1000" }
   - { "name": "pg_stat_statements.track", "value": "all" }
 
 
-pg_hba_standalone_params:
-  - { "conn_type": "host", "database": "all", "user": "all", "address": "0.0.0.0/0", "auth_method": "md5" }
 
 max_shared_buffer_size_mb: 8192
 extentions: ["pg_stat_statements", "postgis"]

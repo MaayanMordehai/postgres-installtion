@@ -1,0 +1,53 @@
+
+- name: "creating the tablespace directory"
+  file:
+    path: "{{ def_tbs_dir }}"
+    state: directory
+    mode: "0700"
+  become_user: "{{ pg_os_user }}"
+  tags: tbs-dir
+
+- name: "changing the pg parameters in postgresql.conf"
+  lineinfile:
+    path: "{{ pg_data }}/postgresql.conf"
+    insertafter: "^(#default_tablespace=|#default_tablespace =|# default_tablespace=|# default_tablespace =)"
+    regexp: "^(default_tablespace=|default_tablespace =)"
+    line: "default_tablespace = {{ default_tablespace }}"
+  notify: Reload pg
+  tags: def-tbs-param
+
+- name: "defining the new tablespace"
+  postgresql_tablespace:
+    tablespace: "{{ default_tablespace }}"
+    location: "{{ def_tbs_dir }}"
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
+  tags: tbs-define
+
+#
+## THIS TASK WILL WORK FOR ANSIBLE 2.9
+## AT THIS TIME WE HAVE 2.8.
+## IF YOU SEE THIS AND WE HAVE ANSIBLE >= 2.9
+## PLEASE REMOVE THE COMMAND TASK THAT DOES THIS AND REMOVE THE # FROM THIS TASK
+## THANKS. DATE: 3.2.2020
+#
+#- name: "changing the givin databases to the new tablespace"
+#  postgresql_db:
+#    db: "{{ item }}"
+#    tablespace: "{{ default_tablespace }}"
+#  loop: "{{ dbs_to_change }}"
+#  become_user: "{{ pg_os_user }}"
+#  environment:
+#    PGDATA: "{{ pg_data }}"
+#  tags: change-tbs
+
+- name: "changing the givin databases to the new tablespace"
+  command: "{{ pg_bin }}/psql -c \"alter database {{ item }} set tablespace {{ default_tablespace }};\""
+  loop: "{{ dbs_to_change }}"
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
+  tags: tbs-define
+
+

@@ -1,0 +1,5 @@
+- name: Reload pg
+  service:
+    name: "{{ pg_srv_name }}"
+    state: reload
+

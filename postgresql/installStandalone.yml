@@ -29,59 +29,13 @@
         name: cfg-pg-srv
       tags: cfg-pg-srv
 
-    - name: "Getting needed params"
-      setup:
-        gather_subset: "!all,!min,hardware"
-      tags: 
-        - effective-cache-size
-        - shared-buffers
-        - cfg-pg-prms
-
-    - name: "finding the effective cache size recommended"
-      set_fact:
-        effective_cache_size: "{{ (ansible_memtotal_mb * 0.75)|round|int|string + \"MB\"}}"
-      tags:
-        - effective-cache-size
-        - cfg-pg-prms
-
-    - name: "finding the shared_buffers size recommended "
-      set_fact:
-        shared_buffers: "{{ [ (ansible_memtotal_mb*0.25)|round|int, max_shared_buffer_size_mb|int ]|min|string + \"MB\" }}"
-      tags:
-        - shared-buffers
-        - cfg-pg-prms
-
-    - name: "adding the specific params to the param list with the standart value"
-      set_fact:
-        pg_standalone_params: "{{ pg_standalone_params + [ item ] }}"
-      when: item.value is defined
-      loop:
-        - { "name": "shared_buffers", "value": "{{ shared_buffers }}" }
-        - { "name":  "effective_cache_size", "value": "{{ effective_cache_size }}" }
-      tags:
-        - effective-cache-size
-        - shared-buffers
-        - cfg-pg-prms
+    - import_role: 
+        name: cfg-pg-post-inst
+      tags: cfg-pg-post-inst
 
     - import_role:
-        name: cfg-pg-prms
-      vars:
-        pg_params: "{{ pg_standalone_params }}"
-        pg_hba_params: "{{ pg_hba_standalone_params }}"
-      tags: 
-        - cfg-pg-prms
-        - effective-cache-size
-        - shared-buffers
-
-    - name: Change admin user password
-      postgresql_user:
-        name: "{{ postgres_db_admin }}"
-        password: "{{ admin_user_pass }}"
-        encrypted: yes
-      become_user: "{{ pg_os_user }}"
-      environment:
-        PGDATA: "{{ pg_data }}"
-      tags: pg-db-pass
+        name: def-tbs
+      tags: def-tbs
 
 #    - name: Adding the extenstions to postrges db
 #      postgresql_ext:
@@ -111,4 +65,25 @@
 # 12. create database and user according to our permissions module
 
 
+#
+#DEPLOYMENT
+#- import playbook - standalone - inventorygroup
+#  - role - inst-rpms
+#  - role - config-user
+#  - role - prep-dirs
+#  - task - initdb
+#  - role - config-service
+#  - role - cfg-pg-post-inst hba,pg basic + pass
+#  - role - def-tbs prms,dirs,db-def 
 
+#- import playbook - extentions -  one host - sorted first - master
+#  - role - postgis extention
+#  - role - pg_stat_statements extention
+
+#
+#- import playbook - add app database + app user + permissions one host - sorted first - master
+#
+
+#- import playbook - replica - inventorygroup - sorted first - master
+#
+#
