@@ -1,0 +1,29 @@
+- hosts: "{{ cluster_name }}"
+  remote_user: "{{ rmt_user }}"
+  become: yes
+  gather_facts: no
+  tasks:
+
+# disable selinux + reboot 
+
+    - import_role:
+        name: inst-rpms
+      vars:
+        repos: "{{ pg_repos }}"
+        rpms: "{{ pg_rpms }}"
+      tags: inst-rpms
+
+    - import_role:
+        name: cfg-os-user
+      tags: cfg-os-user
+
+    - import_role:
+        name: prep-dirs
+      tags: prep-dirs
+
+    - import_role:
+        name: cfg-pg-srv
+      tags: cfg-pg-srv
+
+# ssh keys - not include backup server
+

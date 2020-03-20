@@ -1,0 +1,32 @@
+## MASTER PLAY - DEPLOY POSTGRESQL REPLICA
+#- hosts: "{{ cluster_name }}"
+#  remote_user: "{{ rmt_user }}"
+#  become: yes
+#  gather_facts: no
+#  order: sorted
+#  tasks:
+#
+# assert params
+# master_host
+# standby_host/s (as list (?))   
+#
+#
+
+# run only on Master server
+- import_playbook: inst_Standalone.yml
+  vars:
+    inv_group: "{{ master_host }}" 
+    initiate_cluster: yes
+
+# run on standbys servers
+- import_playbook: inst_Standalone.yml
+  vars:
+    inv_group: "{{ standby_host }}"
+    initiate_cluster: no
+
+- import_playbook: apply_extentions.yml
+  vars:
+    inv_group: "{{ master_host }}"
+   
+- import_playbook: cre_replica.yml
+

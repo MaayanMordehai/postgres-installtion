@@ -7,9 +7,9 @@
     option: "Environment=PGDATA"
     value: "{{ pg_data }}"
 
-- name: apply the changes, enable and start the postgresql service
+- name: apply the changes, and enable the postgresql service
   service:
     name: "{{ pg_srv_name }}"
     enabled: yes
     daemon_reload: yes
-    state: started
+    state: stopped

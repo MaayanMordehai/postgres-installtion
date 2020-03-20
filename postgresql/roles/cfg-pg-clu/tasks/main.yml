@@ -1,3 +1,9 @@
+- name: "Initiate Cluster"
+  command: "{{ pg_bin }}/initdb --pgdata {{ pg_data }} --data-checksums"
+  become_user: "{{ pg_os_user }}"
+  notify: Restart pg
+  tags: initdb
+
 - name: "Getting needed info for pg basic params"
   setup:
     gather_subset: "!all,!min,hardware"
@@ -43,17 +49,6 @@
     PGDATA: "{{ pg_data }}"
   notify: Restart pg
   tags: pg-params
-
-#### in case someone won't like the better way - i'm keeping this as comments for now.
-#- name: "changing the pg parameters in postgresql.conf"
-#  lineinfile:
-#    path: "{{ pg_data }}/postgresql.conf"
-#    insertafter: "^(#{{ item.name }}=|#{{ item.name }} =|# {{ item.name }}=|# {{ item.name }} =)"
-#    regexp: "^({{ item.name }}=|{{ item.name }} =)"
-#    line: "{{ item.name }} = {{ item.value }}"
-#  loop: "{{ pg_post_inst_params }}"
-#  notify: Restart pg
-#  tags: postgresql-params
 
 - name: "adding the connection needed to pg_hba.conf"
   postgresql_pg_hba:

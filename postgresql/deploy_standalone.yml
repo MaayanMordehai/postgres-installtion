@@ -1,41 +1,22 @@
 ## CHILD PLAY - INSTALL POSTGRESQL STANDALONE ##
-- hosts: "{{ inv_group|default(cluster_name) }}"
+- hosts: "{{ inv_hosts|default(cluster_name) }}"
   remote_user: "{{ rmt_user }}"
   become: yes
   gather_facts: no
   tasks:
 
-    - import_role:
-        name: inst-rpms
-      vars:
-        repos: "{{ pg_repos }}"
-        rpms: "{{ pg_rpms }}"
-      tags: inst-rpms
-
-    - import_role:
-        name: cfg-os-user
-      tags: cfg-os-user
-
-    - import_role:
-        name: prep-dirs
-      tags: prep-dirs
-
-    - name: Initiate Cluster
-      command: "/usr/pgsql-{{ pg_major_version }}/bin/initdb --pgdata {{ pg_data }} --data-checksums"
-      become_user: "{{ pg_os_user }}"
-      tags: initdb
-
-    - import_role:
-        name: cfg-pg-srv
-      tags: cfg-pg-srv
-
     - import_role: 
-        name: cfg-pg-post-inst
-      tags: cfg-pg-post-inst
+        name: cfg-pg-clu
+      tags: cfg-pg-clu
 
     - import_role:
         name: def-tbs
       tags: def-tbs
+
+      #TODO
+    - import_role:
+        name: add-extentions
+      tags: add-extentions
 
 #    - name: Adding the extenstions to postrges db
 #      postgresql_ext:

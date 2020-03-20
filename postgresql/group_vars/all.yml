@@ -14,11 +14,14 @@ pg_tbs: "{{ base_dir }}/tbs"
 
 pg_data: "{{ base_dir }}/data"
 
+pg_wals_from_pri: "{{ base_dir }}/wals_from_primary"
+
 dirs_info:
   - { "path": "/postgres", "mode": "0775", "owner": "{{ pg_os_user }}" }
   - { "path": "{{ base_dir }}", "mode": "0775", "owner": "{{ pg_os_user }}" }
   - { "path": "{{ pg_data }}", "mode": "0700", "owner": "{{ pg_os_user }}" }
   - { "path": "{{ pg_tbs }}", "mode": "0700", "owner": "{{ pg_os_user }}" }
+  - { "path": "{{ pg_wals_from_pri }}", "mode": "0700", "owner": "{{ pg_os_user }}" }
 
 pg_srv_name: "postgresql-{{ pg_major_version }}.service"
 
@@ -58,3 +61,6 @@ admin_user_pass: !vault |
           3338
 
 extentions: [ "pg_stat_statement", "postgis" ]
+
+initiate_cluster: true
+
