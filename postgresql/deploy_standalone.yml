@@ -32,45 +32,12 @@
 #        - pg_extentions
       
 # postgres standalone automation - 
-# 1. install rpms V
-# 2. change user definitions - including bash profile V
-# 3. prep dirs V
-# 4. change systemd postgres service V
 # 5. initdb --data-checksums V
 # 6. postgresql.conf params V
 # 7. pg_hba.conf V
 # 8. change postgres password V
 # 9. create tablespace V
-# 10. adding pg_stat_statement, postgis extentions
+# 10. adding pg_stat_statement, postgis extentions ---- 
 # 11. change tablespace of template 1 V
-# 12. create database and user according to our permissions module
+# 12. create database and user according to our permissions module ----
 
-
-#
-#DEPLOYMENT
-#- import playbook - standalone - inventorygroup
-#  - role - inst-rpms V
-#  - role - config-user V
-#  - role - prep-dirs V
-#  - task - initdb V
-#  - role - config-service V
-#  - role - cfg-pg-post-inst hba,pg basic + pass V
-#  - role - def-tbs prms,dirs,db-def V
-
-#- import playbook - extentions -  one host - sorted first - master
-#  - role - postgis extention
-#  - role - pg_stat_statements extention
-
-#
-#- import playbook - add app database + app user + permissions one host - sorted first - master
-#  - role - cre-app-db-user
-#
-
-#- import playbook - replica - inventorygroup - sorted first - master
-#  - role - selinux
-#  - ?
-#  - ?
-#  - ?
-#  handlers
-#  - role - reboot-gracefully
-#
