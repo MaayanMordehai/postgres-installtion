@@ -30,8 +30,8 @@ pg_wals_from_pri: "{{ base_dir }}/wals_from_primary"
 
 # pg directories to create
 dirs_info:
-  - { "path": "{{ postgresql_dir }}", "mode": "0775", "owner": "{{ pg_os_user }}" }
-  - { "path": "{{ base_dir }}", "mode": "0775", "owner": "{{ pg_os_user }}" }
+  - { "path": "{{ postgresql_dir }}", "mode": "0774", "owner": "{{ pg_os_user }}" }
+  - { "path": "{{ base_dir }}", "mode": "0774", "owner": "{{ pg_os_user }}" }
   - { "path": "{{ pg_data }}", "mode": "0700", "owner": "{{ pg_os_user }}" }
   - { "path": "{{ pg_tbs }}", "mode": "0700", "owner": "{{ pg_os_user }}" }
   - { "path": "{{ pg_wals_from_pri }}", "mode": "0700", "owner": "{{ pg_os_user }}" }
