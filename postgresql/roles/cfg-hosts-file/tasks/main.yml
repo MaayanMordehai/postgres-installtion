@@ -1,0 +1,21 @@
+- name: "getting a list of all the /etc/hosts lined that we need to add"
+  set_fact:
+    hosts_recordes:  "{{ hosts_recordes|default([]) + \
+                         [ { 'ip': hostvars[ item ]['ansible_all_ipv4_addresses'][0], \
+                             'hostname': hostvars[ item ]['ansible_hostname'], \
+                             'hostname_with_domain': hostvars[ item ]['ansible_fqdn'] } ] }}"
+  loop: "{{ ansible_play_batch }}"
+  run_once: true
+
+- name: "enter the hosts records to the hosts file"
+  lineinfile:
+    path: "{{ hosts_file }}" 
+    regexp: "^{{ item.ip }}"
+    line: "{{ item.ip + \
+              ' ' + \
+              item.hostname + \
+              ' ' + \
+              item.hostname_with_domain + \
+              ' # This line was added by postgres automation' }}"
+  loop: "{{ hosts_recordes }}"
+    

@@ -14,9 +14,9 @@
       tags: def-tbs
 
       #TODO
-    - import_role:
-        name: add-extentions
-      tags: add-extentions
+    #- import_role:
+    #    name: add-extentions
+    #  tags: add-extentions
 
 #    - name: Adding the extenstions to postrges db
 #      postgresql_ext:

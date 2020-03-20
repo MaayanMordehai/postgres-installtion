@@ -5,7 +5,6 @@
   gather_facts: no
   order: sorted
   tasks:
-
     - name: "make sure we have the required parameters"
       assert:
         that:
@@ -27,18 +26,19 @@
           - pg_type in [ "REPLICA", "STANDALONE"]
       tags: chk-prms
 
+
 - import_playbook: prerequisite.yml
 
-- import_playbook: deploy_standalone.yml
-  vars:
-    inv_hosts: "{{ master_host }}"
-  when: pg_type == "REPLICA"
+#- import_playbook: deploy_standalone.yml
+#  vars:
+#    inv_hosts: "{{ master_host }}"
+#  when: pg_type == "REPLICA"
 
-- import_playbook: deploy_standalone.yml
-  vars:
-    inv_hosts: "{{ cluster_name }}"
-  when: pg_type == "STANDALONE"
+#- import_playbook: deploy_standalone.yml
+#  vars:
+#    inv_hosts: "{{ cluster_name }}"
+#  when: pg_type == "STANDALONE"
 
-- import_playbook: deploy_replica.yml
-  when: pg_type == "REPLICA"
+#- import_playbook: deploy_replica.yml
+#  when: pg_type == "REPLICA"
  
