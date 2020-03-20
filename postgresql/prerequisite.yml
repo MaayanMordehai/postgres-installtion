@@ -32,5 +32,15 @@
         name: cfg-pg-srv
       tags: cfg-pg-srv
 
+    - import_role:
+        name: add-known-hosts
+      vars:
+        known_hosts: "{{ (ansible_play_batch|map('extract', \
+                                                  hostvars, \
+                                                  ['ansible_eth0', 'ipv4', 'address'])|list) + 
+                          ansible_play_batch }}"
+      become_user: "{{ pg_os_user }}"
+      tags: add-known-hosts
+
 # ssh keys - not include backup server
 
