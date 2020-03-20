@@ -9,3 +9,4 @@ pg_post_inst_params:
 pg_hba_post_inst_params:
   - { "conn_type": "host", "database": "all", "user": "all", "address": "0.0.0.0/0", "auth_method": "md5" }
 
+max_shared_buffer_size_mb: 8192

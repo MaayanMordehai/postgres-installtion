@@ -1,32 +1,44 @@
 ## MASTER PLAY - DEPLOY POSTGRESQL REPLICA
-#- hosts: "{{ cluster_name }}"
-#  remote_user: "{{ rmt_user }}"
-#  become: yes
-#  gather_facts: no
-#  order: sorted
-#  tasks:
-#
-# assert params
-# master_host
-# standby_host/s (as list (?))   
-#
-#
+- hosts: "{{ cluster_name }}"
+  remote_user: "{{ rmt_user }}"
+  become: yes
+  gather_facts: no
+  order: sorted
+  tasks:
 
-# run only on Master server
-- import_playbook: inst_Standalone.yml
+    - name: "make sure we have the required parameters"
+      assert:
+        that:
+          - "{{ item }} is defined"
+      loop: "{{ required_params }}"
+      tags: chk-prms
+
+    - name: "make sure we have the replica required parameters"
+      assert:
+        that:
+          - "{{ item }} is defined"
+      loop: "{{ replica_required_params }}"
+      when: pg_type == "REPLICA"
+      tags: chk-prms
+
+    - name: "chack that the pg_type parameter is defined properly"
+      assert:
+        that:
+          - pg_type in [ "REPLICA", "STANDALONE"]
+      tags: chk-prms
+
+- import_playbook: prerequisite.yml
+
+- import_playbook: deploy_standalone.yml
   vars:
-    inv_group: "{{ master_host }}" 
-    initiate_cluster: yes
+    inv_hosts: "{{ master_host }}"
+  when: pg_type == "REPLICA"
 
-# run on standbys servers
-- import_playbook: inst_Standalone.yml
+- import_playbook: deploy_standalone.yml
   vars:
-    inv_group: "{{ standby_host }}"
-    initiate_cluster: no
+    inv_hosts: "{{ cluster_name }}"
+  when: pg_type == "STANDALONE"
 
-- import_playbook: apply_extentions.yml
-  vars:
-    inv_group: "{{ master_host }}"
-   
-- import_playbook: cre_replica.yml
-
+- import_playbook: deploy_replica.yml
+  when: pg_type == "REPLICA"
+ 

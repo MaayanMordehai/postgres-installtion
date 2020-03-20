@@ -1,39 +1,55 @@
+# remote user to connect to - need to be sudoer
 rmt_user: dba
 
+# postgresql os user
 pg_os_user: postgres
 
-pg_full_version: 10.7
+# full pg version to install 
+pg_full_version: 10.7 # "{{ version }}"
 
+# pg_major_version
 pg_major_version: "{{ ((pg_full_version|string).split('.'))[0] }}"
 
+# pg binaries location
 pg_bin: "/usr/pgsql-{{ pg_major_version }}/bin"
 
-base_dir: "/postgres/{{ pg_major_version }}"
+# general pg directory
+postgresql_dir: "/postgres"
 
+# base pg dir for this version
+base_dir: "{{ postgresql_dir }}/{{ pg_major_version }}"
+
+# pg tablespaces directory
 pg_tbs: "{{ base_dir }}/tbs"
 
+# pg database main directory
 pg_data: "{{ base_dir }}/data"
 
+# pg replica recovering wals directory
 pg_wals_from_pri: "{{ base_dir }}/wals_from_primary"
 
+# pg directories to create
 dirs_info:
-  - { "path": "/postgres", "mode": "0775", "owner": "{{ pg_os_user }}" }
+  - { "path": "{{ postgresql_dir }}", "mode": "0775", "owner": "{{ pg_os_user }}" }
   - { "path": "{{ base_dir }}", "mode": "0775", "owner": "{{ pg_os_user }}" }
   - { "path": "{{ pg_data }}", "mode": "0700", "owner": "{{ pg_os_user }}" }
   - { "path": "{{ pg_tbs }}", "mode": "0700", "owner": "{{ pg_os_user }}" }
   - { "path": "{{ pg_wals_from_pri }}", "mode": "0700", "owner": "{{ pg_os_user }}" }
 
+# pg service name
 pg_srv_name: "postgresql-{{ pg_major_version }}.service"
 
-replication_wal_dir: { "path": "{{ pg_base }}/wals_from_primary", "mode": "0644", "owner": "{{ pg_os_user }}"  }
-
+# vg name for pg
 fs_vg: vgpg
 
+# lv name for pg 
 fs_lv: pglv
 
+# needed repo for postgres rpms
 pg_repos:
   - { "name": "pg{{ pg_major_version }}", "base_url": "file:///rpm/{{ pg_major_version }}/redhat/pg{{ pg_major_version }}", "desc": "Postgresql Repo - version {{ pg_major_version }}" }
 
+# postgresql needed rpms
 pg_rpms:
   - "postgresql{{ pg_major_version }}-libs-{{ pg_full_version }}"
   - "postgresql{{ pg_major_version }}-server-{{ pg_full_version }}"
@@ -44,9 +60,7 @@ pg_rpms:
   - "python2-psycopg2"
 #  - "postgis*_{{ pg_major_version }}"
 
-max_shared_buffer_size_mb: 8192
-extentions: ["pg_stat_statements", "postgis"]
-
+# our db admin user
 postgres_db_admin: "postgres"
 
 # vaultPass, postgres-pass
@@ -60,7 +74,14 @@ admin_user_pass: !vault |
           6461353764363730390a366136663535616636643639643436333531383038616531396631316437
           3338
 
-extentions: [ "pg_stat_statement", "postgis" ]
+# REPLICA / STANDALONE
+pg_type: "REPLICA"
 
-initiate_cluster: true
+required_params:
+  - "cluster_name"
+  - "version"
+  - "app_db_name"
+  - "app_db_user"
 
+replica_required_params:
+  - "master_host"

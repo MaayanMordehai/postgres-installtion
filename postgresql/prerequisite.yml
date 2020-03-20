@@ -5,6 +5,7 @@
   tasks:
 
 # disable selinux + reboot 
+# /etc/hosts
 
     - import_role:
         name: inst-rpms

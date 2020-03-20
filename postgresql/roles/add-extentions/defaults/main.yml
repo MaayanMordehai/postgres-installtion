@@ -6,3 +6,5 @@ pg_admin_user: "postgres"
 pg_stat_statement_extra_params:
   - { "name": "pg_stat_statements.max", "value": "1000" }
   - { "name": "pg_stat_statements.track", "value": "all" }
+
+extentions: ["pg_stat_statements", "postgis"]
