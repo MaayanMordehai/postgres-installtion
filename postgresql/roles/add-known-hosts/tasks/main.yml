@@ -4,18 +4,11 @@
   changed_when: false
   loop: "{{ known_hosts }}"
 
-- name: "setting list of keys"
-  set_fact:
-    keys: "{{ keys|default([]) + item.stdout_lines }}"
-  loop: "{{ keys_output.results }}"
-  loop_control:
-    label: "output have been hidden for security reasones"
-
 - name: "Adding the keys to known hosts"
   known_hosts:
     name: "{{ item.split(' ')[0] }}"
     hash_host: yes
     key: "{{ item }}"
-  loop: "{{ keys }}"
+  loop: "{{ keys_output.results | sum(attribute='stdout_lines', start=[]) }}"
   loop_control:
     label: "output have been hidden for security reasones"
