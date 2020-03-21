@@ -18,7 +18,7 @@ The ip of the hosts is the IPv4 in eth0.
 
 | Name | Default | Default definition location | Use cases that required change |
 |:---|:---|:-------|:---|
-| `hosts_records` | the ip, hostname and hostname with domain of the hosts that are running in the batch | set fact - on run time using ansible facts | when you need records of hosts that the play not run on, or when you don't need the records of all the hosts that the play run on. |
+| `hosts_records` | the ip, hostname and hostname with domain of the hosts that are running in the batch | set fact - on run time using ansible facts | when you need records of hosts that the play doesn't run on (in the batch), or when you need some of the records of the hosts that the play run on (in the batch), but not all of them. |
 | `hosts_file` | /etc/hosts | vars folder | when you have diffrent hosts file, which will not happen in most cases |
 
 ## Examples
