@@ -17,7 +17,7 @@ The ip of the hosts is the IPv4 in eth0.
 ## Parameters
 
 | name | default | default defined in | use cases for change |
-|:---:|:---:|:---:|:---:|
+|:---|:---|:---|:---|
 | `hosts_records` | the ip, hostname and hostname with domain of the hosts that are running in the batch | set fact - on run time using facts | when you need records of hosts that the play not run on, or when you don't need the records of all the hosts that the play rum on.
 
 ## Examples
