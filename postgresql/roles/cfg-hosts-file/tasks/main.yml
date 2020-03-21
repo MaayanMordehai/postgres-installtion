@@ -1,6 +1,6 @@
 - name: "getting a list of all the /etc/hosts lines that we need to add"
   set_fact:
-    hosts_recordes:  "{{ hosts_recordes|default([]) + \
+    hosts_records:  "{{ hosts_records|default([]) + \
                          [ { 'ip': hostvars[ item ]['ansible_default_ipv4']['address'], \
                              'hostname': hostvars[ item ]['ansible_hostname'], \
                              'hostname_with_domain': hostvars[ item ]['ansible_fqdn'] } ] }}"
@@ -15,6 +15,6 @@
               ' ' + \
               item.hostname + \
               ' ' + \
-              item.hostname_with_domain + \
+              item.hostname_with_domain|default('') + \
               ' # This line was added by postgres automation' }}"
-  loop: "{{ hosts_recordes }}" 
+  loop: "{{ hosts_records }}" 
