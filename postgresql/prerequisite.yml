@@ -5,36 +5,35 @@
   tasks:
 
     - import_role:
-        name: no-selinux
-      tags: no-selinux 
-
-    - import_role:
-        name: cfg-hosts-file
-      tags: cfg-hosts-file
-      when: pg_type == "REPLICA"
+        name: cfg-no-selinux
+      tags: cfg-no-selinux
 
     - import_role:
         name: cfg-pg-os-user
       tags: cfg-pg-os-user
 
     - import_role:
+        name: cfg-hosts-file
+      when: pg_type == "REPLICA"
+      tags: cfg-hosts-file
+
+    - import_role:
         name: add-known-hosts
-      vars:
-        known_hosts: "{{ (ansible_play_batch|map('extract', \
-                                                  hostvars, \
-                                                  ['ansible_eth0', 'ipv4', 'address'])|list) +
-                          ansible_play_batch }}"
+      when: pg_type == "REPLICA"
       become_user: "{{ pg_os_user }}"
       tags: add-known-hosts
 
     - name: "Setting the parameter of the hosts and user for the ssh-nopass"
       set_fact:
-        dest_hosts_users_nopass: "{{ dest_hosts_users_nopass|default([]) + [{ 'host': item, 'user': pg_os_user }] }}"
+        dest_hosts_users_nopass: "{{ dest_hosts_users_nopass|default([]) + \
+                                     [{ 'host': item, 'user': pg_os_user }] }}"
       loop: "{{ ansible_play_batch }}"
+      when: pg_type == "REPLICA"
       tags: cfg-ssh-nopass
 
     - import_role:
         name: cfg-ssh-nopass
+      when: pg_type == "REPLICA"
       become_user: "{{ pg_os_user }}"
       tags: cfg-ssh-nopass
    

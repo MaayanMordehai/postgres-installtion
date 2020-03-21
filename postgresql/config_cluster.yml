@@ -6,14 +6,21 @@
   tasks:
 
     - import_role: 
-        name: cfg-pg-clu
-      tags: cfg-pg-clu
+        name: cre-pg-clu
+      tags: cre-pg-clu
 
     - import_role:
-        name: def-tbs
-      tags: def-tbs
+        name: cre-default-tbs
+      tags: cre-default-tbs
 
-      #TODO
+    - import_role:
+        name: cfg-basic-standarts
+      tags: cfg-basic-standarts
+
+# extention 
+#
+# app_db + app_user
+    #TODO
     #- import_role:
     #    name: add-extentions
     #  tags: add-extentions

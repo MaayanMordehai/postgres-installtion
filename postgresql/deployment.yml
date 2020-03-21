@@ -29,16 +29,16 @@
 
 - import_playbook: prerequisite.yml
 
-#- import_playbook: deploy_standalone.yml
+#- import_playbook: config_cluster.yml
 #  vars:
 #    inv_hosts: "{{ master_host }}"
 #  when: pg_type == "REPLICA"
 
-#- import_playbook: deploy_standalone.yml
+#- import_playbook: config_cluster.yml
 #  vars:
 #    inv_hosts: "{{ cluster_name }}"
 #  when: pg_type == "STANDALONE"
 
-#- import_playbook: deploy_replica.yml
+#- import_playbook: config_replica.yml
 #  when: pg_type == "REPLICA"
  

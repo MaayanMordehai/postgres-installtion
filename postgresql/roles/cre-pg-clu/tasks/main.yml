@@ -1,0 +1,10 @@
+- name: "Initiate Cluster"
+  command: "{{ pg_bin }}/initdb --pgdata {{ pg_data }} --data-checksums"
+  become_user: "{{ pg_os_user }}"
+  tags: initdb
+
+- name: "Starting postgres"
+  systemd:
+    name: "{{ pg_srv_name }}"
+    state: started
+
