@@ -1,4 +1,4 @@
-- hosts: 52.142.163.178 
+- hosts: "{{ cluster_name }}"
   remote_user: root
   gather_facts: no
   tasks:
