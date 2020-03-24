@@ -1,1 +1,9 @@
-known_hosts: "{{ ansible_play_batch }}"
+# the hosts to add to known hosts ( ips and hostname )
+known_hosts: "{{ (ansible_play_batch \
+                  |map('extract', \
+                       hostvars, \
+                       ['ansible_eth0', \
+                        'ipv4', \
+                        'address']) \
+                  |list) + \
+                 ansible_play_batch }}"

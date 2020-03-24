@@ -6,10 +6,9 @@
     section: "Service"
     option: "Environment=PGDATA"
     value: "{{ pg_data }}"
-  notify: deamon reload
+  notify: daemon reload
 
 - name: enable the postgresql service
   service:
     name: "{{ pg_srv_name }}"
     enabled: yes
-    state: stopped

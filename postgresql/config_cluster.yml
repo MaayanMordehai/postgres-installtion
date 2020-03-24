@@ -1,5 +1,5 @@
 ## CHILD PLAY - INSTALL POSTGRESQL STANDALONE ##
-- hosts: "{{ inv_hosts|default(cluster_name) }}"
+- hosts: "{{ master_host|default(cluster_name) }}"
   remote_user: "{{ rmt_user }}"
   become: yes
   gather_facts: no
@@ -17,34 +17,14 @@
         name: cfg-basic-standarts
       tags: cfg-basic-standarts
 
-# extention 
-#
-# app_db + app_user
-    #TODO
-    #- import_role:
-    #    name: add-extentions
-    #  tags: add-extentions
+    - import_role:
+        name: cre-app-db
+      become_user: "{{ pg_os_user }}"
+      environment:
+        PGDATA: "{{ pg_data }}"
+      tags: cre-app-db
 
-#    - name: Adding the extenstions to postrges db
-#      postgresql_ext:
-#        db: "{{ admin_db_user }}"
-#        login_user: "{{ admin_db_user }}"
-#        name: "{{ item }}"
-#        state: present
-#      loop: "{{ extentions }}"
-#      become_user: "{{ pg_os_user }}"
-#      environment:
-#        PGDATA: "{{ pg_data }}"
-#      tags:
-#        - pg_extentions
-      
-# postgres standalone automation - 
-# 5. initdb --data-checksums V
-# 6. postgresql.conf params V
-# 7. pg_hba.conf V
-# 8. change postgres password V
-# 9. create tablespace V
-# 10. adding pg_stat_statement, postgis extentions ---- 
-# 11. change tablespace of template 1 V
-# 12. create database and user according to our permissions module ----
+    - import_role:
+        name: add-extentions
+      tags: add-extentions
 

@@ -28,20 +28,20 @@ also permissions on the partitions should be oragrid, asmadmin
 |:---|:---|:---|:---|
 | `app_disk` | `/dev/sdb` | Defaults folder | When the asm disk is not /dev/sdb |
 | `app_partitions_and_dest` | `{ "1": "data1p1", "2": "fra1p1", "3": "grid1p1", "4": "grid2p1", "5": "grid3p1" }` | When the partitions are not 1 - data, 2 - fra, 3-5 grid. or when you have more partitions of data/fra. |
-| `ora_type` | RESTART | Vars folder | this role does not support RAC because the APP does not need RAC. so never change this |
+| `ora_type` | `RESTART` | Vars folder | this role does not support RAC because the APP does not need RAC. so never change this |
 | `disk_uuid.stdout`| the uuid of `app_disk` | at runtime using command and register | probably never |
 
 ## Handlers
 
-| Name | What | Why |
-|:---|:---|:---|
-| udevadm trigger | reloading udev roles | So that the mapping will happen |
+| Name | Meaning |
+|:---|:---|
+| udevadm trigger | reloading udev roles - for the new mapping to occur |
 
 ## Template
 
-| name | Why |
-|:---|:---|:---|
-| 20-asm-permission-APP-RESTART-rules.j2 | the rules for asm. | 
+| name | Meaning |
+|:---|:---|
+| 20-asm-permission-APP-RESTART-rules.j2 | the rules for asm | 
 
 ## Examples
 

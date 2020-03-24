@@ -1,0 +1,44 @@
+- name: Create a new database for the application
+  postgresql_db:
+    name: "{{ app_db_name }}"
+  tags: app-db
+
+- name: Create the app user
+  postgresql_user:
+    db: "{{ app_db_name }}"
+    name: "{{ app_user_name }}"
+    password: "{{ app_user_pass }}"
+    encrypted: yes
+    priv: "CONNECT/TEMPORARY/CREATE"
+  tags: app-user
+
+- name: revoke all on app database from public
+  postgresql_privs:
+    db: "{{ pg_db }}"
+    type: database
+    privs: ALL
+    objs: "{{ app_db_name }}"
+    role: public
+    state: absent
+  tags: privs
+
+- name: revoke all on schema public from public
+  postgresql_privs:
+    db: "{{ app_db_name }}"
+    type: schema
+    privs: ALL
+    objs: public
+    role: public
+    state: absent
+  tags: privs
+
+- name: grant usage on schema public to app user
+  postgresql_privs:
+    db: "{{ app_db_name }}"
+    type: schema
+    privs: USAGE
+    objs: public
+    role: "{{ app_user_name }}"
+    state: present
+  tags: privs
+

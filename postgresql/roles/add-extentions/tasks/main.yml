@@ -1,20 +1,41 @@
-# this module change the parameters with alter system - which change the postgresql.auto.conf
- - name: "changing the pg parameters in postgresql.auto.conf"
-   postgresql_set:
-     name: "{{ item.name }}"
-     value: "{{ item.value }}"
-   loop: "{{ pg_stat_statement_params + pg_stat_statement_extra_params }}"
-   become_user: "{{ pg_os_user }}"
-   environment:
-     PGDATA: "{{ pg_data }}"
-   tags: pg-stat-statement-params
-
-- name: Adding the extenstion to postrges db
-  postgresql_ext:
-    name: "pg_stat_statement"
-    state: present
+# the alter system does not work on extentions parameters
+- name: "Changing the pg extentions parameters (that reqiured reload) in postgresql.conf"
+  lineinfile:
+    path: "{{ pg_data }}/postgresql.conf"
+    insertafter: "^(#{{ item.name }}=|#{{ item.name }} =|# {{ item.name }}=|# {{ item.name }} =)"
+    regexp: "^({{ item.name }}=|{{ item.name }} =)"
+    line: "{{ item.name }} = {{ item.value }}"
+  loop: "{{ extentions_info \
+            | selectattr('reload_params','defined')\
+            | map(attribute='reload_params') \
+            | sum(start=[]) }}"
+  notify: Reload pg
   become_user: "{{ pg_os_user }}"
   environment:
     PGDATA: "{{ pg_data }}"
-  tags:
-    - pg_extentions
+
+- name: "Changing the pg extentions parameters (that reqiured restart pg) in postgresql.conf"
+  lineinfile:
+    path: "{{ pg_data }}/postgresql.conf"
+    insertafter: "^(#{{ item.name }}=|#{{ item.name }} =|# {{ item.name }}=|# {{ item.name }} =)"
+    regexp: "^({{ item.name }}=|{{ item.name }} =)"
+    line: "{{ item.name }} = {{ item.value }}"
+  loop: "{{ extentions_info \
+            | selectattr('restart_params','defined')\
+            | map(attribute='restart_params') \
+            | sum(start=[]) }}"
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
+  notify: Restart pg 
+
+- name: "Adding the extenstion to the listed databases"
+  postgresql_ext:
+    name: "{{ item.extention }}"
+    db: "{{ item.database }}"
+    state: present
+  loop: "{{ extentions_info }}"
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
+

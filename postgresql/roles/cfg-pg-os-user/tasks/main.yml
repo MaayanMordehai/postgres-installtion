@@ -1,14 +1,15 @@
 
-- name: Changing postgres group to be by standart
+- name: Creating postgres group by standart
   group:
     name: "{{ pg_os_group }}"
     gid: "{{ group_id }}"
     state: present
   tags: pg-user
 
-- name: Changing postgres user to be by standart
+- name: Creating postgres user by standart
   user:
     name: "{{ pg_os_user }}"
+    group: "{{ pg_os_group }}"
     uid: "{{ user_id }}"
     shell: "{{ user_shell }}"
     password: "{{ user_hashed_pass }}"

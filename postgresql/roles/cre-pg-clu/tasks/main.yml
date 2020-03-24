@@ -1,5 +1,12 @@
+- name: "Check if PostgreSQL database is initialized."
+  stat:
+    path: "{{ pg_data }}/PG_VERSION"
+  register: pgdata_dir_version
+  tags: initdb
+
 - name: "Initiate Cluster"
   command: "{{ pg_bin }}/initdb --pgdata {{ pg_data }} --data-checksums"
+  when: not pgdata_dir_version.stat.exists
   become_user: "{{ pg_os_user }}"
   tags: initdb
 

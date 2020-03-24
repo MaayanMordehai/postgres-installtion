@@ -1,53 +1,73 @@
-- name: "Starting postgres"
-  systemd:
-    name: "{{ pg_srv_name }}"
-    state: started
-
 - name: "Getting needed info for pg basic params"
   setup:
     gather_subset: "!all,!min,hardware"
-  tags: 
-    - postgresql-params
-    - effective_cache_size
-    - shared_buffers
+  tags: pg-restart-prms
 
 - name: "finding the effective cache size recommended"
   set_fact:
-    effective_cache_size: "{{ (ansible_memtotal_mb * 0.75)|round|int|string + \"MB\"}}"
-  tags:
-    - postgresql-params
-    - effective_cache_size
-
-- name: "finding the shared_buffers size recommended "
-  set_fact:
-    shared_buffers: "{{ [ (ansible_memtotal_mb*0.25)|round|int, max_shared_buffer_size_mb|int ]|min|string + \"MB\" }}"
-  tags:
-    - postgresql-params
-    - shared_buffers
-
-- name: "adding the specific params to the param list with the standart value"
-  set_fact:
-    pg_post_inst_params: "{{ pg_post_inst_params + [ item ] }}"
-  when: item.value is defined
-  loop:
-    - { "name": "shared_buffers", "value": "{{ shared_buffers }}" }
-    - { "name":  "effective_cache_size", "value": "{{ effective_cache_size }}" }
+    effective_cache_size: "{{ (ansible_memtotal_mb * 0.75) \
+                              | round \
+                              | int \
+                              | string + \"MB\"}}"
   tags: 
-    - postgresql-params
-    - shared_buffers
-    - effective_cache_size
+    - pg-reload-prms
+    - pg-prms
+
+- name: "finding the shared_buffers size recommended"
+  set_fact:
+    shared_buffers: "{{ [ (ansible_memtotal_mb * 0.25) \
+                          | round \
+                          | int, max_shared_buffer_size_mb \
+                          | int ] \
+                          | min \
+                          | string + \"MB\" }}"
+  tags: pg-restart-prms
+
+- name: "adding the params to the param list with the standart value"
+  set_fact:
+    pg_basic_restart_params: "{{ pg_basic_restart_params + \
+                                 [{ 'name': 'shared_buffers', \
+                                    'value': shared_buffers }] }}"
+  when: shared_buffers is defined
+  tags:
+    - pg-restart-prms
+    - pg-prms
+
+- name: "adding the params to the param list with the standart value"
+  set_fact:
+    pg_basic_reload_params: "{{ pg_basic_reload_params + \
+                                [{ 'name': 'effective_cache_size', \
+                                   'value': effective_cache_size }] }}"
+  when: effective_cache_size is defined
+  tags:
+    - pg-reload-prms 
+    - pg-prms
 
 # this module change the parameters with alter system - which change the postgresql.auto.conf
-- name: "changing the pg parameters in postgresql.auto.conf"
+- name: "changing the pg parameters (that reqiure restart pg) in postgresql.auto.conf"
   postgresql_set:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
-  loop: "{{ pg_post_inst_params }}"
+  loop: "{{ pg_basic_restart_params }}"
   become_user: "{{ pg_os_user }}"
   environment:
     PGDATA: "{{ pg_data }}"
   notify: Restart pg
-  tags: pg-params
+  tags: 
+    - pg-restart-prms
+    - pg-prms
+
+- name: "changing the pg parameters in postgresql.auto.conf"
+  postgresql_set:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+  loop: "{{ pg_basic_reload_params }}"
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
+  tags: 
+    - pg-reload-prms
+    - pg-prms
 
 - name: "adding the connection needed to pg_hba.conf"
   postgresql_pg_hba:
@@ -61,17 +81,17 @@
   become_user: "{{ pg_os_user }}"
   environment:
     PGDATA: "{{ pg_data }}"
-  loop: "{{ pg_hba_post_inst_params }}"
+  loop: "{{ pg_hba_basic_records }}"
   notify: Reload pg
   tags: pg-hba
 
 - name: "Change admin user password"
   postgresql_user:
-    name: "{{ postgres_db_admin }}"
+    name: "{{ pg_admin_user }}"
     password: "{{ admin_user_pass }}"
     encrypted: yes
   become_user: "{{ pg_os_user }}"
   environment:
     PGDATA: "{{ pg_data }}"
-  tags: pg-db-pass
+  tags: pg-db-admin-pass
 

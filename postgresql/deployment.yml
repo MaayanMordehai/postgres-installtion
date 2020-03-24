@@ -3,8 +3,15 @@
   remote_user: "{{ rmt_user }}"
   become: yes
   gather_facts: no
+  any_errors_fatal: yes
   order: sorted
   tasks:
+    - name: "check that the pg_type parameter is defined properly"
+      assert:
+        that:
+          - pg_type in [ "REPLICA", "STANDALONE"]
+      tags: chk-prms
+
     - name: "make sure we have the required parameters"
       assert:
         that:
@@ -20,25 +27,18 @@
       when: pg_type == "REPLICA"
       tags: chk-prms
 
-    - name: "chack that the pg_type parameter is defined properly"
+    - name: "make sure we don't have the replica required parameters"
       assert:
         that:
-          - pg_type in [ "REPLICA", "STANDALONE"]
+          - "{{ item }} is undefined"
+      loop: "{{ replica_required_params }}"
+      when: pg_type == "STANDALONE"
       tags: chk-prms
 
 
 - import_playbook: prerequisite.yml
 
-#- import_playbook: config_cluster.yml
-#  vars:
-#    inv_hosts: "{{ master_host }}"
-#  when: pg_type == "REPLICA"
-
-#- import_playbook: config_cluster.yml
-#  vars:
-#    inv_hosts: "{{ cluster_name }}"
-#  when: pg_type == "STANDALONE"
+- import_playbook: config_cluster.yml
 
 #- import_playbook: config_replica.yml
 #  when: pg_type == "REPLICA"
- 

@@ -1,6 +1,7 @@
 - hosts: "{{ cluster_name }}"
   remote_user: "{{ rmt_user }}"
   become: yes
+  any_errors_fatal: yes
   gather_facts: yes
   tasks:
 
@@ -42,11 +43,12 @@
       tags: prep-dirs
 
     - import_role:
-        name: inst-rpms
-      vars:
-        repos: "{{ pg_repos }}"
-        rpms: "{{ pg_rpms }}"
-      tags: inst-rpms
+        name: inst-pg-rpms
+      tags: inst-pg-rpms
+
+    - import_role:
+        name: inst-psycopg
+      tags: inst-psycopg
 
     - import_role:
         name: cfg-pg-srv

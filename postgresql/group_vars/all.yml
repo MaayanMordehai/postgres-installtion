@@ -5,7 +5,7 @@ rmt_user: dba
 pg_os_user: postgres
 
 # full pg version to install 
-pg_full_version: 10.7 # "{{ version }}"
+pg_full_version: "{{ version }}"
 
 # pg_major_version
 pg_major_version: "{{ ((pg_full_version|string).split('.'))[0] }}"
@@ -30,11 +30,21 @@ pg_wals_from_pri: "{{ base_dir }}/wals_from_primary"
 
 # pg directories to create
 dirs_info:
-  - { "path": "{{ postgresql_dir }}", "mode": "0774", "owner": "{{ pg_os_user }}" }
-  - { "path": "{{ base_dir }}", "mode": "0774", "owner": "{{ pg_os_user }}" }
-  - { "path": "{{ pg_data }}", "mode": "0700", "owner": "{{ pg_os_user }}" }
-  - { "path": "{{ pg_tbs }}", "mode": "0700", "owner": "{{ pg_os_user }}" }
-  - { "path": "{{ pg_wals_from_pri }}", "mode": "0700", "owner": "{{ pg_os_user }}" }
+  - path: "{{ postgresql_dir }}"
+    mode: "0774"
+    owner: "{{ pg_os_user }}" 
+  - path: "{{ base_dir }}"
+    mode: "0774"
+    owner: "{{ pg_os_user }}"
+  - path: "{{ pg_data }}"
+    mode: "0700"
+    owner: "{{ pg_os_user }}"
+  - path: "{{ pg_tbs }}"
+    mode: "0700"
+    owner: "{{ pg_os_user }}"
+  - path: "{{ pg_wals_from_pri }}"
+    mode: "0700"
+    owner: "{{ pg_os_user }}"
 
 # pg service name
 pg_srv_name: "postgresql-{{ pg_major_version }}.service"
@@ -45,27 +55,15 @@ fs_vg: vgpg
 # lv name for pg 
 fs_lv: pglv
 
-# needed repo for postgres rpms
-pg_repos:
-  - { "name": "pg{{ pg_major_version }}", "base_url": "file:///rpm/{{ pg_major_version }}/redhat/pg{{ pg_major_version }}", "desc": "Postgresql Repo - version {{ pg_major_version }}" }
-
-# postgresql needed rpms
-pg_rpms:
-  - "postgresql{{ pg_major_version }}-libs-{{ pg_full_version }}"
-  - "postgresql{{ pg_major_version }}-server-{{ pg_full_version }}"
-  - "postgresql{{ pg_major_version }}-contrib-{{ pg_full_version }}"
-#  - "postgresql{{ pg_major_version }}-{{ pg_full_version }}"
-  - "pg_top{{ pg_major_version }}"
-  - "pgcenter"
-  - "python2-psycopg2"
-#  - "postgis*_{{ pg_major_version }}"
-
-# our db admin user
-postgres_db_admin: "postgres"
+# pg database
+pg_db: "postgres"
+# pg admin user
+pg_admin_user: "postgres"
 
 # vaultPass, postgres-pass
-# create with ansible-vault encrypt_string 'postgres-pass' --name admin_user_pass
-# need to put postgres md5 hash insted
+# create with:
+# ansible-vault encrypt_string 'postgres-pass' --name admin_user_pass
+# need to put postgres md5 hash instead 
 admin_user_pass: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           37626166613634656636323330643631666431656662343564626165383165373633663863366537
@@ -74,23 +72,39 @@ admin_user_pass: !vault |
           6461353764363730390a366136663535616636643639643436333531383038616531396631316437
           3338
 
-# REPLICA / STANDALONE
-pg_type: "REPLICA"
-
 # postgres home directory
 home_dir: "/var/lib/pgsql"
 
-# the host to add to known hosts ( ips and hostname )
-known_hosts: "{{ (ansible_play_batch|map('extract', \
-                                         hostvars, \
-                                         ['ansible_eth0', 'ipv4', 'address'])|list) +
-                 ansible_play_batch }}"
+# true to add postgis extention
+# false to not add postgis extention
+postgis: yes
+
+postgis_extention: 
+  extention: "postgis"
+  database: "{{ app_db_name }}"
+
+pg_stat_statement_extention:
+  extention: "pg_stat_statements"
+  database: "{{ pg_db }}"
+  restart_params:
+    - name: "shared_preload_libraries"
+      value: "pg_stat_statements"
+  reload_params:
+    - name: "pg_stat_statements.max"
+      value: "1000"
+    - name: "pg_stat_statements.track"
+      value: "all"
+
+extentions_info: "{{ [pg_stat_statement_extention] + \
+                     (postgis|ternary([postgis_extention], [])) }}"
 
 required_params:
   - "cluster_name"
   - "version"
-  - "app_db_name"
-  - "app_db_user"
+  - "pg_type" # REPLICA / STANDALONE
+  - "app_db_name" 
+  - "app_user_name" 
+  - "app_user_pass"
 
 replica_required_params:
   - "master_host"
