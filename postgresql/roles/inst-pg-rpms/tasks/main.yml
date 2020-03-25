@@ -17,7 +17,17 @@
     update_cache: true
     lock_timeout: 180
   loop:
-    - { rpms: "{{ pg_rpms }}", repos: "{{ pg_repo_info.name }}" } 
-    - "{{ postgis | ternary({ 'rpms': postgis_rpms , 'repos': postgis_repos }, omit) }}"
+    - { rpms: "{{ pg_rpms }}", repos: "{{ pg_repo_info.name }}" }
+    - { rpms: "{{ python_postgres_rpms }}", repos: "{{ python_postgres_repos }}"} 
   tags: inst-rpms
 
+- name: Install the postgis rpms
+  yum:
+    name: "{{ postgis_rpms }}"
+    disablerepo: "*"
+    enablerepo: "{{ postgis_repos }}"
+    state: present
+    update_cache: true
+    lock_timeout: 180
+  when: postgis|bool
+  tags: inst-rpms

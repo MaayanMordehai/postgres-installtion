@@ -47,10 +47,6 @@
       tags: inst-pg-rpms
 
     - import_role:
-        name: inst-psycopg
-      tags: inst-psycopg
-
-    - import_role:
         name: cfg-pg-srv
       tags: cfg-pg-srv
 

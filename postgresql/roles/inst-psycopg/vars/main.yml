@@ -1,8 +1,0 @@
-psycopg_required_rpms:
-  - python-devel
-  - libpqxx
-  - libpqxx-devel
-  - gcc
-
-# change with diffrent network
-psycopg_repos: "rhel-7-server-rpms,epel"

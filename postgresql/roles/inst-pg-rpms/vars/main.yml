@@ -14,3 +14,8 @@ postgis_rpms: "postgis{{ postgis_version }}_{{ pg_major_version }}"
 
 postgis_repos: "epel,rhel-7-server-rpms,{{ pg_repo_info.name }}"
 
+python_postgres_rpms:
+  - "python-psycopg2"
+  - "python-ipaddress"
+
+python_postgres_repos: "rhel-7-server-rpms,epel,rhui-rhel-7-server-rhui-eus-rpms,{{ pg_repo_info.name }}"
