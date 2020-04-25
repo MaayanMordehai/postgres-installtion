@@ -6,38 +6,58 @@
   any_errors_fatal: yes
   order: sorted
   tasks:
-    - name: "check that the pg_type parameter is defined properly"
+    - name: "check that the pg_type is defined properly"
       assert:
         that:
           - pg_type in [ "REPLICA", "STANDALONE"]
+        fail_msg: "the pg_type parameter is not defined properly"
       tags: chk-prms
 
     - name: "make sure we have the required parameters"
       assert:
         that:
           - "{{ item }} is defined"
-      loop: "{{ required_params }}"
+        fail_msg: "one of the required parameters are not defined, \
+                   make sure you have defined the following parameters: \
+                   {{ required_params|join(', ') }}"
+      loop: "{{ required_params + \
+                (pg_type == \"REPLICA\") \ 
+                | ternary(replica_required_params, \
+                          standalone_required_params) }}"
       tags: chk-prms
 
-    - name: "make sure we have the replica required parameters"
-      assert:
-        that:
-          - "{{ item }} is defined"
-      loop: "{{ replica_required_params }}"
-      when: pg_type == "REPLICA"
-      tags: chk-prms
-
-    - name: "make sure we don't have the replica required parameters"
+    - name: "make sure we don't have the required parameters that we don't need"
       assert:
         that:
           - "{{ item }} is undefined"
-      loop: "{{ replica_required_params }}"
+        fail_msg: "{{ item }} should not be defined in {{ pg_type }}"
+      loop: "{{ (pg_type == \"REPLICA\") \
+                | ternary(replica_required_params, \
+                          standalone_required_params) }}"
       when: pg_type == "STANDALONE"
       tags: chk-prms
 
-# when replication make sure ?
-#  - master_server in cluster_name
-#  - only two servers in cluster_name
+    - name: "version checks"
+      assert:
+        that:
+          - supported_from_version is version(supported_until_version, '<')
+          - version is version(supported_from_version, '>=')
+          - version is version(supported_until_version, '<=')
+        fail_msg: "{{ version }} is not supported, \
+                   you should provide a version: \
+                   {{ supported_from_version }} - \
+                   {{ supported_until_version }} \
+                   if you won't provide version \
+                   we will take the latest supported"
+      tags: chk-prms
+
+    - name: "Checks for the replica parameters"
+      assert:
+        that:
+          - primary_host in ansible_play_batch
+          - ansible_play_batch|length|int == 2
+      when: pg_type == "REPLICA"
+      tags: chk-prms
 
 
 - import_playbook: prerequisite.yml

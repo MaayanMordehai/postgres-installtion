@@ -1,15 +1,20 @@
-- deployment - can't have default vaule for pg_type cause of the condition in the import_playbook, need to think about it
-- replication - check with moti why in noual the replication user role is superuser and not replication
+Not changing code:
+- replication - check with moti why in noual the replication user role is superuser and not replication.
 - replication file - check why in noual we put in there password even after adding to pg_hba the replictor trust and the servers.
+
+Testing that might require change:
 - cfg-replica role - need to make sure the omit with notify handler works and not start the handler, if not change the role accurdingly :(
 - rmt-pg-bck role - make sure delete works fast.
-- deployment add check that primary_server in cluster_name group.
-- add a 'must' column to the readmes parameters table to clearify which parameters the roles must get
-- check if the parameters pg_admin_user, admin_user_pass and pg_db are needed in the play group vars or should be in the roles defaults/vars - if not needed in the group vars change and also change in the main readme
+- check if the parameters pg_admin_user and admin_user_pass are needed in the play group vars or should be in the roles defaults/vars - if not needed in the group vars change and also change in the main readme
 
 READMES:
+---------
 - main - the plays readme
 - main - maybe seperate the unmandtory parameters to section of possible overwrite, unlikly to require overwrite and don't overwrite - cause the plays might fail or get unexpectable resoult - write something about you must test the results properly. Don't change if you are not sure in what are the outcomes.
+- main - clearfy more then one replica to a server was not tested but should work and the archive_command parameter of the primary is the first standbyand there might be some problems with the wals location. We never needed replica of more then one so it was not on my mind when writing this.
+- main - examples for:
+  - getting several standalone 
+  and think about more
 
 roles: 
 - add-extentions
@@ -22,3 +27,4 @@ roles:
 - cre-pg-clu
 - inst-pg-rpms
 - rmt-pg-bck 
+- add a 'must' column to the readmes parameters table to clearify which parameters the roles must get.

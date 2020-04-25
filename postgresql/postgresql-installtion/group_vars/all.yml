@@ -1,3 +1,19 @@
+required_params:
+  - "cluster_name"
+  - "pg_type" # REPLICA / STANDALONE
+  - "app_db_name"
+  - "app_user_name"
+  - "app_user_pass"
+
+replica_required_params:
+  - "primary_host"
+
+standalone_required_params: []
+
+supported_from_version: 10.1
+supported_until_version: 10.9
+version: "{{ supported_until_version }}"
+
 # remote user to connect to - need to be sudoer
 rmt_user: dba
 
@@ -108,15 +124,4 @@ rep_user_pass: !vault |
           33393336396539613438626233366564323130613531663133306338613833623063393264636337
           6462326533356366380a613664636533643636343935353362323236636563616336323338326239
           3435
-
-required_params:
-  - "cluster_name"
-  - "version"
-  - "pg_type" # REPLICA / STANDALONE
-  - "app_db_name" 
-  - "app_user_name" 
-  - "app_user_pass"
-
-replica_required_params:
-  - "primary_host"
 
