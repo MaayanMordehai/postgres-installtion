@@ -1,0 +1,5 @@
+- name: Reload pg primary
+  systemd:
+    name: "{{ pg_srv_name }}"
+    state: reloaded
+  delegate_to: "{{ primary_host }}"

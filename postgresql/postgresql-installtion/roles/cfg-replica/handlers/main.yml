@@ -1,0 +1,9 @@
+- name: Restart pg
+  systemd:
+    name: "{{ pg_srv_name }}"
+    state: restarted
+
+- name: Reload pg
+  systemd:
+    name: "{{ pg_srv_name }}"
+    state: reloaded

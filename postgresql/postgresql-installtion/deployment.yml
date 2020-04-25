@@ -35,10 +35,14 @@
       when: pg_type == "STANDALONE"
       tags: chk-prms
 
+# when replication make sure ?
+#  - master_server in cluster_name
+#  - only two servers in cluster_name
+
 
 - import_playbook: prerequisite.yml
 
-- import_playbook: config_cluster.yml
+- import_playbook: deploy_cluster.yml
 
-#- import_playbook: config_replica.yml
-#  when: pg_type == "REPLICA"
+- import_playbook: deploy_replica.yml
+  when: pg_type == "REPLICA"

@@ -29,22 +29,30 @@
 ## THIS TASK WILL WORK FOR ANSIBLE 2.9
 ## AT THIS TIME WE HAVE 2.8.
 ## IF YOU SEE THIS AND WE HAVE ANSIBLE >= 2.9
-## PLEASE REMOVE THE COMMAND TASK THAT DOES THIS AND REMOVE THE # FROM THIS TASK
+## PLEASE REMOVE THE TASKS THAT DOES THIS AND REMOVE THE # FROM THIS TASK
 ## THANKS. DATE: 3.2.2020
 #
 #- name: "changing the givin databases to the new tablespace"
 #  postgresql_db:
-#    db: "{{ item }}"
+#    db: "{{ template_db }}"
 #    tablespace: "{{ default_tablespace }}"
-#  loop: "{{ dbs_to_change }}"
 #  become_user: "{{ pg_os_user }}"
 #  environment:
 #    PGDATA: "{{ pg_data }}"
-#  tags: change-tbs
+#  tags: change
 
-- name: "changing the givin databases to the new tablespace"
-  command: "{{ pg_bin }}/psql -c \"alter database {{ item }} set tablespace {{ default_tablespace }};\""
-  loop: "{{ dbs_to_change }}"
+- name: "checking default tablespace"
+  command: "{{ pg_bin }}/psql -c \"show default_tablespace\" --no-align -t"
+  register: tablespace_output
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
+  changed_when: false
+  tags: tbs-define
+
+- name: "changing the given databases to the new tablespace"
+  command: "{{ pg_bin }}/psql -c \"alter database {{ template_db }} set tablespace {{ default_tablespace }};\""
+  when: default_tablespace != tablespace_output.stdout
   become_user: "{{ pg_os_user }}"
   environment:
     PGDATA: "{{ pg_data }}"

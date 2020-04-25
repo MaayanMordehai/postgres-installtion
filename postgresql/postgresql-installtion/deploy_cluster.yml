@@ -1,5 +1,5 @@
 ## CHILD PLAY - INSTALL POSTGRESQL STANDALONE ##
-- hosts: "{{ master_host|default(cluster_name) }}"
+- hosts: "{{ primary_host|default(cluster_name) }}"
   remote_user: "{{ rmt_user }}"
   become: yes
   gather_facts: no

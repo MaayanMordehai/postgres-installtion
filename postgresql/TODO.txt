@@ -1,0 +1,9 @@
+The idea is to create playbook for backups - with or without monitoring and add to the installtion role for monitoring and then create the big playbook that will call the installtion deployment with the right parameters and to the backup deployment with the right parameter, and if anything will be added there will be a diffrent playbook for it and the primary play will call it with the needed parameters. the primary play will run on the postgresql group in the inventory.
+This is fitting to the new ideal that playbooks will run over and over to preserve state, the changes will be according to the cr (all the automation will be from openshift).
+So for this to happen I need to do the following:
+
+- playbook for backups
+- primary playbook
+- common vars folder for the same default vars in plays. need to think if to import them when calling the playbooks or to import them in the playbooks themselfs. (probebly better in the plays themselfs so will be able to be overwritten by inventory group / hosts vars and also so we can run the playbooks themselfs and not only from the primary playbook, but should consider that with everything on openshift and run all the time there will not be any need to run the plays alone).
+- common roles folder - we used to do role sharing with all the playbooks with a soft link, we should think about it more - mostly with how this is aline with doing ci/cd. for now if I need to do role sharing I'll create a common roles dir and do soft link for the plays.
+- create README for the primary playbook That explaines the idea, the playbooks and maybe common roles and vars ?

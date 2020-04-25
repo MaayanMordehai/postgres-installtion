@@ -41,8 +41,11 @@ This will add the hosts in the `hosts_records` to the hosts that the play run on
     name: cfg-hosts-file
   vars:
     hosts_records:
-      - { ip: 127.0.0.1, hostname: localhost }
-      - { ip: 55.78.5.4, hostname: host1, hostname_with_domain: host1.domain }
+      - ip: 127.0.0.1
+        hostname: localhost 
+      - ip: 55.78.5.4
+        hostname: host1
+        hostname_with_domain: host1.domain
 ```
 
 ## Diffrent Network

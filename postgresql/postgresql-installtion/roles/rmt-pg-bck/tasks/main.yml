@@ -1,0 +1,56 @@
+
+- name: Checking we have the required variables
+  assert:
+    that:
+      - backup_dir is defined
+      - pg_tbs is defined
+      - remote_host is defined
+      - pg_data is defined
+
+- name: Putting the reqiured hba record
+  postgresql_pg_hba:
+    dest: "{{ pg_data }}/pg_hba.conf"
+    contype: "host"
+    databases: "replication"
+    users: "all"
+    address: "{{ inventory_hostname }}"
+    method: "trust"
+    mode: "0600"
+  delegate_to: "{{ primary_host }}"
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
+  notify: Reload pg primary
+  tags: pg-hba
+
+- name: make sure reload have been done
+  meta: flush_handlers
+
+- name: Getting the directory files
+  find:
+    path: "{{ backup_dir }}"
+    hidden: yes
+    file_type: any
+  register: pg_data_files
+  tags: clear-data
+
+- name: Getting the directory files
+  find:
+    path: "{{ pg_tbs }}"
+    hidden: yes
+    file_type: any
+  register: pg_tbs_files
+  tags: clear-data
+
+- name: deleting all the files in pg_data and tbs location
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop: "{{ (pg_data_files.files + pg_tbs_files.files) | map(attribute='path') | list }}"
+  tags: clear-data
+
+- name: cloning the remote host
+  command: "{{ pg_bin }}/pg_basebackup -P -X stream -D {{ backup_dir }} -p 5432 -h {{ remote_host }}"
+  become_user: "{{ pg_os_user }}"
+  tags: pg-base-backup
+

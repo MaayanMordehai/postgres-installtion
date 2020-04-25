@@ -1,0 +1,24 @@
+- deployment - can't have default vaule for pg_type cause of the condition in the import_playbook, need to think about it
+- replication - check with moti why in noual the replication user role is superuser and not replication
+- replication file - check why in noual we put in there password even after adding to pg_hba the replictor trust and the servers.
+- cfg-replica role - need to make sure the omit with notify handler works and not start the handler, if not change the role accurdingly :(
+- rmt-pg-bck role - make sure delete works fast.
+- deployment add check that primary_server in cluster_name group.
+- add a 'must' column to the readmes parameters table to clearify which parameters the roles must get
+- check if the parameters pg_admin_user, admin_user_pass and pg_db are needed in the play group vars or should be in the roles defaults/vars - if not needed in the group vars change and also change in the main readme
+
+READMES:
+- main - the plays readme
+- main - maybe seperate the unmandtory parameters to section of possible overwrite, unlikly to require overwrite and don't overwrite - cause the plays might fail or get unexpectable resoult - write something about you must test the results properly. Don't change if you are not sure in what are the outcomes.
+
+roles: 
+- add-extentions
+- cfg-basic-standarts
+- cfg-pg-srv
+- cfg-replica
+- cfg-ssh-nopass
+- cre-app-db
+- cre-default-tbs
+- cre-pg-clu
+- inst-pg-rpms
+- rmt-pg-bck 

@@ -17,7 +17,9 @@
     vg: "{{ fs_vg }}"
     lv: "{{ fs_lv }}"
     size: +100%FREE
-  tags: lvm
+  tags:
+    - cre-lv 
+    - lvm
 
 - name: Create xfs fs on lv
   filesystem:

@@ -1,0 +1,62 @@
+#  test omit part
+- name: "Getting the recovery file"
+  template:
+    src: "recovery.j2"
+    dest: "{{ pg_data }}/recovery.{{ (inventory_hostname == primary_host) | ternary('done', 'conf') }}"
+    force: yes
+    owner: "{{ pg_os_user }}"
+    group: "{{ pg_os_group | default(pg_os_user) }}"
+  notify: "{{ (inventory_hostname == primary_host) | ternary(omit, 'Restart pg') }}"
+  tags: recovery-files
+
+- name: "make sure both servers are up for the configuration change"
+  systemd:
+    name: "{{ pg_srv_name }}"
+    state: started
+  tags:
+    - rep-prms
+    - rep-reload-prms
+    - rep-restart-prms
+
+- name: "Change parameters that required reload"
+  postgresql_set:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+  loop: "{{ replica_reload_params }}"
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
+  notify: Reload pg
+  tags: 
+    - rep-reload-prms
+    - rep-prms
+
+- name: "Change parameters that required restart"
+  postgresql_set:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+  loop: "{{ replica_restart_params }}"
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
+  notify: Restart pg
+  tags: 
+    - rep-restart-prms
+    - rep-prms
+
+- name: "adding the needed records to pg_hba.conf"
+  postgresql_pg_hba:
+    dest: "{{ pg_data }}/pg_hba.conf"
+    contype: "host"
+    databases: "replication"
+    users: "all"
+    address: "{{ item }}"
+    method: "trust"
+    mode: "0600"
+  loop: "{{ ansible_play_batch }}"
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
+  notify: Reload pg
+  tags: pg-hba
+

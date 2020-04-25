@@ -1,4 +1,3 @@
-
 - name: Creating postgres group by standart
   group:
     name: "{{ pg_os_group }}"

@@ -1,0 +1,5 @@
+standby_mode = 'on'
+recovery_target_timeline = 'latest'
+primary_conninfo = 'host={{ replicate_from_host }} port=5432 user={{ rep_user_name }}'
+restore_command = 'cp -f {{ pg_wals_from_pri }}/%f %p'
+archive_cleanup_command = '{{ pg_bin }}/pg_archivecleanup {{ pg_wals_from_pri }}/%r'

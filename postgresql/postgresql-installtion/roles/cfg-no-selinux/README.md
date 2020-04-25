@@ -14,7 +14,7 @@ selinux disabled or permissive (default disabled).
 ## Parameters
 
 | Name | Meaning | Options |  Default | Default definition location | Use cases that required change |
-|:---|:---|:---|:---|
+|:---|:---|:---|:---|:---|:---|
 | `wanted_se_state` | the wanted selinux state | disabled / permissive | disabled | defaults | when you want selinux as permissive |
 
 ## Handlers
