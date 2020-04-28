@@ -1,4 +1,4 @@
-#  test omit part
+---
 - name: "Getting the recovery file"
   template:
     src: "recovery.j2"
@@ -9,25 +9,37 @@
   notify: "{{ (inventory_hostname == primary_host) | ternary(omit, 'Restart pg') }}"
   tags: recovery-files
 
-- name: "make sure both servers are up for the configuration change"
-  systemd:
-    name: "{{ pg_srv_name }}"
-    state: started
+- name: "configure as hot standby or not hot standby before the other configurations"
+  lineinfile:
+    path: "{{ pg_data }}/postgresql.conf"
+    insertafter: "^(#hot_standby=|#hot_standby =|# hot_standby=|# hot_standby =)"
+    regexp: "^(hot_standby=|hot_standby =)"
+    line: "hot_standby = {{ hot_standby }}"
+  notify: Restart pg
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
   tags:
-    - rep-prms
-    - rep-reload-prms
     - rep-restart-prms
+    - rep-prms
+
+- name: "make sure the hot stansby setting is apply"
+  meta: flush_handlers
+  tags:
+    - rep-restart-prms
+    - rep-prms
 
 - name: "Change parameters that required reload"
   postgresql_set:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
   loop: "{{ replica_reload_params }}"
+  when: inventory_hostname == primary_host or hot_standby == "on" 
   become_user: "{{ pg_os_user }}"
   environment:
     PGDATA: "{{ pg_data }}"
   notify: Reload pg
-  tags: 
+  tags:
     - rep-reload-prms
     - rep-prms
 
@@ -36,13 +48,44 @@
     name: "{{ item.name }}"
     value: "{{ item.value }}"
   loop: "{{ replica_restart_params }}"
+  when: inventory_hostname == primary_host or hot_standby == "on"
   become_user: "{{ pg_os_user }}"
   environment:
     PGDATA: "{{ pg_data }}"
   notify: Restart pg
-  tags: 
+  tags:
     - rep-restart-prms
     - rep-prms
+
+- name: "Change parameters for the not hot, standby server that required reload"
+  lineinfile:
+    path: "{{ pg_data }}/postgresql.conf"
+    insertafter: "^(#{{ item.name }}=|#{{ item.name }} =|# {{ item.name }}=|# {{ item.name }} =)"
+    regexp: "^({{ item.name }}=|{{ item.name }} =)"
+    line: "{{ item.name }} = {{ item.value }}"
+  loop: "{{ replica_reload_params }}"
+  when: 
+    - inventory_hostname != primary_host
+    - hot_standby == "off"
+  notify: Reload pg
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
+
+- name: "Change parameters for the not hot, standby server, that required restart"
+  lineinfile:
+    path: "{{ pg_data }}/postgresql.conf"
+    insertafter: "^(#{{ item.name }}=|#{{ item.name }} =|# {{ item.name }}=|# {{ item.name }} =)"
+    regexp: "^({{ item.name }}=|{{ item.name }} =)"
+    line: "{{ item.name }} = {{ item.value }}"
+  loop: "{{ replica_restart_params }}"
+  when:
+    - inventory_hostname != primary_host
+    - hot_standby == "off"
+  notify: Restart pg
+  become_user: "{{ pg_os_user }}"
+  environment:
+    PGDATA: "{{ pg_data }}"
 
 - name: "adding the needed records to pg_hba.conf"
   postgresql_pg_hba:
@@ -59,4 +102,4 @@
     PGDATA: "{{ pg_data }}"
   notify: Reload pg
   tags: pg-hba
-
+...

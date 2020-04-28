@@ -1,21 +1,21 @@
+---
 pg_os_user: postgres
 
-hot_standby: yes
+hot_standby: "on"
 
 replica_reload_params:
   - name: "wal_keep_segments"
     value: "1536"
+  - name: "archive_command"
+    value: "rsync -a %p {{ replicate_from_host }}:{{ pg_wals_from_pri }}/%f"
 
 replica_restart_params:
   - name: "wal_level"
-    value: "{{ hot_standby | ternary('hot_standby', 'replica') }}"
+    value: "replica"
   - name: "max_wal_senders"
     value: "5"
   - name: "archive_mode"
     value: "on"
-  - name: "hot_standby"
-    value: "{{ hot_standby | ternary('on', 'off') }}"
   - name: "max_replication_slots"
     value: "10"
-  - name: "archive_command"
-    value: "rsync -a %p {{ replicate_from_host }}:{{ pg_wals_from_pri }}/%f"
+...

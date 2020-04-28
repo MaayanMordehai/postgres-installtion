@@ -62,3 +62,13 @@
       tags: 
         - cfg-replica
         - resync-standby
+
+    - name: "Make sure the new standby is started after the configurarion change"
+      systemd:
+        name: "{{ pg_srv_name }}"
+        state: started
+      when:
+        - inventory_hostname != primary_host
+        - inventory_hostname not in replicated_hosts
+      tags: resync-standby
+

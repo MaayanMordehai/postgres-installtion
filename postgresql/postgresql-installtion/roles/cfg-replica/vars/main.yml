@@ -1,6 +1,7 @@
+---
 replicate_from_host: "{{ (inventory_hostname == primary_host) \
                          | ternary((ansible_play_batch \
                                    | reject('match', primary_host) \
                                    | list \
                                    | sort)[0], primary_host) }}"
-
+...
