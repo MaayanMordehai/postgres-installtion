@@ -1,3 +1,4 @@
+---
 - name: Create a new primary partition for LVM
   parted:
     device: "{{ fs_disk }}"
@@ -44,4 +45,4 @@
     group: "{{ item.group|default(item.owner) }}"
   loop: "{{ dirs_info }}"
   tags: sub-dirs
-
+...

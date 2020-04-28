@@ -1,3 +1,9 @@
+---
+pg_major_version: "{{ ((pg_full_version|string).split('.'))[0] }}"
+
 repos_file_name: "dba"
+
 postgis: no
+
 postgis_version: 30
+...

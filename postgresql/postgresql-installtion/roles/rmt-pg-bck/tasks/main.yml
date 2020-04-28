@@ -1,12 +1,4 @@
-
-- name: Checking we have the required variables
-  assert:
-    that:
-      - backup_dir is defined
-      - pg_tbs is defined
-      - remote_host is defined
-      - pg_data is defined
-
+---
 - name: Putting the reqiured hba record
   postgresql_pg_hba:
     dest: "{{ pg_data }}/pg_hba.conf"
@@ -53,4 +45,4 @@
   command: "{{ pg_bin }}/pg_basebackup -P -X stream -D {{ backup_dir }} -p 5432 -h {{ remote_host }}"
   become_user: "{{ pg_os_user }}"
   tags: pg-base-backup
-
+...

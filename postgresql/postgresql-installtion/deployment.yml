@@ -40,13 +40,13 @@
     - name: "version checks"
       assert:
         that:
-          - supported_from_version is version(supported_until_version, '<')
-          - version is version(supported_from_version, '>=')
-          - version is version(supported_until_version, '<=')
+          - minimum_supported_version is version(maximum_supported_version, '<=')
+          - version is version(minimum_supported_version, '>=')
+          - version is version(maximum_supported_version, '<=')
         fail_msg: "{{ version }} is not supported, \
                    you should provide a version: \
-                   {{ supported_from_version }} - \
-                   {{ supported_until_version }} \
+                   {{ minimum_supported_version }} - \
+                   {{ maximum_supported_version }} \
                    if you won't provide version \
                    we will take the latest supported"
       tags: chk-prms

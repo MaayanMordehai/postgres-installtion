@@ -1,3 +1,4 @@
+---
 - name: "Get list of keys from each host"
   command: "ssh-keyscan {{ item }}"
   register: keys_output
@@ -12,3 +13,4 @@
   loop: "{{ keys_output.results | sum(attribute='stdout_lines', start=[]) }}"
   loop_control:
     label: "output have been hidden for security reasones"
+...

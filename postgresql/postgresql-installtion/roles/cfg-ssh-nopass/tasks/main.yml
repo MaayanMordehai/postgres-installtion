@@ -1,4 +1,4 @@
-
+---
 - name: "get the public key"
   slurp:
     src: "~/.ssh/id_rsa.pub"
@@ -10,3 +10,4 @@
     key: "{{ pub_key['content'] | b64decode  }}"
   delegate_to: "{{ item.host }}"
   loop: "{{ dest_hosts_users_nopass }}"
+...

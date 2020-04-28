@@ -1,4 +1,4 @@
-
+---
 - name: "creating the tablespace directory"
   file:
     path: "{{ def_tbs_dir }}"
@@ -57,5 +57,4 @@
   environment:
     PGDATA: "{{ pg_data }}"
   tags: tbs-define
-
-
+...

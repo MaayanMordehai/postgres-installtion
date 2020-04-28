@@ -1,3 +1,4 @@
+---
 - name: Enabling the pg repo
   yum_repository:
     baseurl: "{{ pg_repo_info.base_url }}"
@@ -6,7 +7,7 @@
     description: "{{ pg_repo_info.desc }}"
     enabled: yes
     gpgcheck: no
-  tags: add-repos
+  tags: add-repo
 
 - name: Install the postgres rpms
   yum:
@@ -30,4 +31,7 @@
     update_cache: true
     lock_timeout: 180
   when: postgis|bool
-  tags: inst-rpms
+  tags: 
+    - inst-rpms
+    - postgis
+...

@@ -1,3 +1,4 @@
+---
 - name: "getting a list of all the /etc/hosts lines that we need to add"
   set_fact:
     hosts_records:  "{{ hosts_records|default([]) + \
@@ -17,4 +18,5 @@
               ' ' + \
               item.hostname_with_domain|default('') + \
               ' # This line was added by postgres automation' }}"
-  loop: "{{ hosts_records }}" 
+  loop: "{{ hosts_records }}"
+...

@@ -1,3 +1,4 @@
+---
 - name: Change the Service PGDATA env to the right one
   ini_file:
     create: no
@@ -12,3 +13,4 @@
   service:
     name: "{{ pg_srv_name }}"
     enabled: yes
+...

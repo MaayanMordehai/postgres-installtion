@@ -7,6 +7,7 @@ Testing that might require change:
 - rmt-pg-bck role - make sure delete works fast.
 - check if the parameters pg_admin_user and admin_user_pass are needed in the play group vars or should be in the roles defaults/vars - if not needed in the group vars change and also change in the main readme
 
+
 READMES:
 ---------
 - main - the plays readme

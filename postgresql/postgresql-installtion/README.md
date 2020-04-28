@@ -10,6 +10,18 @@ The playbooks flow is this:
 - else
   - Child play deploy cluster run on all given hosts.
 
+## MOVING TO DIFFRENT NETWORK CHANGES
+
+**TODO**
+
+- uid and gid
+- yum repos and postgres repo
+- backup server for the monitoring role
+
+## SUPPORTED VERSIONS
+
+**TODO**
+
 ## MASTER PLAY - DEPLOYMENT
 
 This play check the variables we are getting from the user - to make sure we have the reqiured paramters.
@@ -28,7 +40,6 @@ Needed for both standalone and replica deployments:
 | `app_user_pass` | The password of the app user - should be sent after md5 hashed (will work either way) | deploy_cluster |
 | `cluster_name` | This parameter is the inventory group name - also the hosts name without the end number | deployment, prerequisite, deploy_cluster (only when `pg_type: STANDALONE` ), deploy_replica |
 | `pg_type` | This parameter is the type of postgresql deployment - STANDALONE / REPLICA | deployment, prerequisite |
-| `version` | The full version of the postgresql to install major.minor | deployment, prerequisite, deploy_cluster, deploy_replica |
 
 Needed parameters for only replica deployments:
 
@@ -37,6 +48,16 @@ Needed parameters for only replica deployments:
 | `primary_host` | The host in the inventory group `cluster_name` that will be the master of the replica | deploy_cluster, deploy_replica |
 
 #### Unmandetory Parameters
+
+**TODO**
+NEED TO ADD THIS TWO FROM GROUP VARS TO TABLE AND ALSO AL THE NOT GROUP VARS PARAMS
+- minimum_supported_version: 10.1
+- maximum_supported_version: 10.9
+- dest_hosts_users_nopass
+- backup_dir
+- remote_host
+- pg_info - not all just meaning
+- replicated_hosts
 
 | Name | Meaning | Default | Default definition location | Use cases that required overwrite | Used by plays | 
 |:---|:---|:---|:---|:---|:---|
@@ -57,15 +78,16 @@ Needed parameters for only replica deployments:
 | `pg_tbs` | The postgresql tablespaces location | `{{ base_dir }}/tbs` | group_vars in the play | When you want a diffrent tablespaces directory | prerequisite, deploy_cluster |
 | `pg_wals_from_pri` | The location for wals for recovery when there is a lag | `{{ base_dir }}/wals_from_primary` | group_vars in the play | When you want a diffrent location | prerequisite, deploy_replica | 
 | `postgis` | boolean, yes - add postgis extention, no - don't add postgis extention | `no` | group_vars in the play | When you want postgis extention | prerequisite, deploy_cluster |
-| postgis_extention | dictionary of the extention installtion info - the database to apply the extention on, if any db parameters are needed and such | <pre>postgis_extention: <br>  extention: "postgis" <br>  database: "{{ app_db_name }}" <br>  </pre> | group_vars in the play | When you want diffrent databases to add the extention to, when you need to define parameters regarding to the extention and such, you can see what is the names of the keys allowed in [add-extention readme](./roles/add-extention/README.md) | deploy_cluster |
+| `postgis_extention` | dictionary of the extention installtion info - the database to apply the extention on, if any db parameters are needed and such | <pre>postgis_extention: <br>  extention: "postgis" <br>  database: "{{ app_db_name }}" <br>  </pre> | group_vars in the play | When you want diffrent databases to add the extention to, when you need to define parameters regarding to the extention and such, you can see what is the names of the keys allowed in [add-extention readme](./roles/add-extention/README.md) | deploy_cluster |
 | `postgresql_dir` | The postgresql main directory which inside will have the versions specific directories | `/postgres` | group_vars in the play | When you want diffrent directory | prerequisite **TODO** |
 | `rep_user_name` | The name of the replication user | `replicator` | group_vars in the play | When you want diffrent replication user | deploy_replica |
 | `rep_user_pass` | The replication user password | protected with ansible-vault | group_vars in the play | You should not overwrite this - change only in the code itself | deploy_replica |
 | `replica_required_params` | A list of the replication parameter names which are required - those are parameters that are required only by the deploy_replica playbook | <pre>replica_required_params: <br>  - "primary_host" <br> </pre> | group_vars in the play | **Don't overwrite this !!!** | deployment |
 | `required_params` | The required parameters that are needed for the plays (except parameters that are needed only for replica) | <pre>required_params: <br>  - "cluster_name" <br>  - "version" <br>  - "version" <br>  - "pg_type" <br>  - "app_db_name" <br>  - "app_user_name" <br>  - "app_user_pass"  <br> </pre> | group_vars in the play | **Don't overwrite this !!!** | deployment |
 | `rmt_user` | The user to connect to the server with, need to be sudoer | `dba` | group_vars in the play | When you don't have this user as sudoer on the servers | deployment, prerequisite, deploy_cluster, deploy_replica |
-
-TODO 
+| `standalone_required_params` | A list of the standalone parameter names which are required - those are parameters that are required only when deploying standalone and not needed in replica | `[]` | group_vars in the play | **Don't overwrite this !!!** It is only for when the code is edited and there is a parameter that should fit here | deployment |
+| `version` | The full version of the postgresql to install major.minor | default value is latest supported -  `maximum_supported_version` | group_vars in the play | When you want a specific version, it should be a supported version | deployment |
+ 
 
 ## CHILD PLAYBOOK - PREREQUISITE
 
@@ -119,3 +141,5 @@ TODO
 ## CHILD PLAYBOOK - DEPLOY REPLICA
 
 TODO
+
+

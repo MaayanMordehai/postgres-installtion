@@ -1,3 +1,4 @@
+---
 - name: Put SELinux in permissive mode, logging actions that would be blocked.
   selinux:
     policy: targeted
@@ -9,3 +10,4 @@
     state: disabled
   when: wanted_se_state == 'disabled'
   notify: Reboot
+...

@@ -1,5 +1,4 @@
-pg_srv_name: "postgresql-{{ pg_major_version }}.service"
-
+---
 pg_os_user: "postgres"
 
 pg_admin_user: "postgres"
@@ -26,3 +25,4 @@ pg_hba_basic_records:
     auth_method: "md5"
 
 max_shared_buffer_size_mb: 8192
+...

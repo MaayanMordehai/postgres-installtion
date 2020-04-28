@@ -1,5 +1,7 @@
+---
 default_tablespace: "app_tbs"
 
 def_tbs_dir: "{{ pg_tbs }}/{{ default_tablespace }}"
 
 template_db: "template1"
+...

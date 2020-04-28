@@ -1,3 +1,4 @@
+---
 - name: Create a new database for the application
   postgresql_db:
     name: "{{ app_db_name }}"
@@ -41,4 +42,4 @@
     role: "{{ app_user_name }}"
     state: present
   tags: privs
-
+...

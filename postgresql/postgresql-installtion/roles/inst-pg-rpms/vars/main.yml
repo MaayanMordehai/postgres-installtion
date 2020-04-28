@@ -1,3 +1,4 @@
+---
 pg_repo_info:
   name: "pg{{ pg_major_version }}"
   base_url: "file:///rpm/{{ pg_major_version }}/redhat/pg{{ pg_major_version }}"
@@ -19,3 +20,4 @@ python_postgres_rpms:
   - "python-ipaddress"
 
 python_postgres_repos: "rhel-7-server-rpms,epel,rhui-rhel-7-server-rhui-eus-rpms,{{ pg_repo_info.name }}"
+...
