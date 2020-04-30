@@ -42,7 +42,7 @@
   tags: clear-data
 
 - name: cloning the remote host
-  command: "{{ pg_bin }}/pg_basebackup -P -X stream -D {{ backup_dir }} -p 5432 -h {{ remote_host }}"
+  command: "{{ pg_bin }}/pg_basebackup -P -X stream -D {{ backup_dir }} -p 5432 -h {{ remote_host }} --checkpoint=fast"
   become_user: "{{ pg_os_user }}"
   tags: pg-base-backup
 ...

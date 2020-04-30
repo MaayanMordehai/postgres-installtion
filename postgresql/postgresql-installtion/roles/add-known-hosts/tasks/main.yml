@@ -10,7 +10,6 @@
     name: "{{ item.split(' ')[0] }}"
     hash_host: yes
     key: "{{ item }}"
+  no_log: yes
   loop: "{{ keys_output.results | sum(attribute='stdout_lines', start=[]) }}"
-  loop_control:
-    label: "output have been hidden for security reasones"
 ...

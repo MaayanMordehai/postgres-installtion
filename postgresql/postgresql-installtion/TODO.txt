@@ -4,7 +4,6 @@ Not changing code:
 
 Testing that might require change:
 - cfg-replica role - need to make sure the omit with notify handler works and not start the handler, if not change the role accurdingly :(
-- rmt-pg-bck role - make sure delete works fast.
 - check if the parameters pg_admin_user and admin_user_pass are needed in the play group vars or should be in the roles defaults/vars - if not needed in the group vars change and also change in the main readme
 
 

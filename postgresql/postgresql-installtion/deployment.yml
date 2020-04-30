@@ -1,3 +1,4 @@
+---
 ## MASTER PLAY - DEPLOY POSTGRESQL REPLICA
 - hosts: "{{ cluster_name }}"
   remote_user: "{{ rmt_user }}"
@@ -66,3 +67,4 @@
 
 - import_playbook: deploy_replica.yml
   when: pg_type == "REPLICA"
+...

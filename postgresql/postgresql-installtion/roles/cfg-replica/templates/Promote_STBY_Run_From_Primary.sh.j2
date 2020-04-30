@@ -1,0 +1,20 @@
+#!/bin/bash
+
+STBY_server={{ replicate_from_host }}
+
+systemctl stop {{ pg_srv_name }}
+systemctl disable {{ pg_srv_name }}
+
+mv {{ pg_data }}/recovery.done {{ pg_data }}/recovery.conf
+
+sleep 10
+
+pkill -u postgres
+
+if ! pgrep -f postmaster > /dev/null
+then
+        echo "Postgres stopped on this server. Promoting the Standby"
+        runuser -l {{ pg_os_user }} -c "ssh -o StrictHostKeyChecking=no $STBY_server {{ pg_bin }}/pg_ctl -D {{ pg_data }} promote"
+else
+        echo "Postgres Running"
+fi

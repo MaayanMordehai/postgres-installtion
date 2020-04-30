@@ -1,3 +1,5 @@
+---
+## CHILD PLAY - PREREQUISITE FOR POSTGRESQL ##
 - hosts: "{{ cluster_name }}"
   remote_user: "{{ rmt_user }}"
   become: yes
@@ -49,5 +51,4 @@
     - import_role:
         name: cfg-pg-srv
       tags: cfg-pg-srv
-
-
+...

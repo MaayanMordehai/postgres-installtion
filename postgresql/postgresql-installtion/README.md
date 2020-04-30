@@ -50,7 +50,7 @@ Needed parameters for only replica deployments:
 #### Unmandetory Parameters
 
 **TODO**
-NEED TO ADD THIS TWO FROM GROUP VARS TO TABLE AND ALSO AL THE NOT GROUP VARS PARAMS
+NEED TO ADD THIS
 - minimum_supported_version: 10.1
 - maximum_supported_version: 10.9
 - dest_hosts_users_nopass
@@ -58,6 +58,11 @@ NEED TO ADD THIS TWO FROM GROUP VARS TO TABLE AND ALSO AL THE NOT GROUP VARS PAR
 - remote_host
 - pg_info - not all just meaning
 - replicated_hosts
+- pg_scripts
+- fix dirs_info default
+- rep_monitor_hosts_file
+- backup_host
+- monitor_scripts_loc
 
 | Name | Meaning | Default | Default definition location | Use cases that required overwrite | Used by plays | 
 |:---|:---|:---|:---|:---|:---|

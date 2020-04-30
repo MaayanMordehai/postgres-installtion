@@ -1,0 +1,9 @@
+#!/bin/bash
+
+Primary_server={{ replicate_from_host }}
+
+ssh -o StrictHostKeyChecking=no $Primary_server systemctl stop {{ pg_srv_name }}
+ssh -o StrictHostKeyChecking=no $Primary_server systemctl disable {{ pg_srv_name }}
+ssh -o StrictHostKeyChecking=no $Primary_server mv {{ pg_data }}/recovery.done {{ pg_data }}/recovery.conf
+
+runuser -l {{ pg_os_user }} -c "{{ pg_bin }}/pg_ctl -D {{ pg_data }} promote"

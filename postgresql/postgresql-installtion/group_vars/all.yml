@@ -10,9 +10,10 @@ replica_required_params:
 
 standalone_required_params: []
 
-supported_from_version: 10.1
-supported_until_version: 10.9
-version: "{{ supported_until_version }}"
+# maybe change this to supported versions list ? 
+minimum_supported_version: 10.1
+maximum_supported_version: 10.9
+version: "{{ maximum_supported_version }}"
 
 # remote user to connect to - need to be sudoer
 rmt_user: dba
@@ -41,6 +42,9 @@ pg_tbs: "{{ base_dir }}/tbs"
 # pg database main directory
 pg_data: "{{ base_dir }}/data"
 
+# pg scripts directory
+pg_scripts: "{{ base_dir }}/Scripts"
+
 # pg replica recovering wals directory
 pg_wals_from_pri: "{{ base_dir }}/wals_from_primary"
 
@@ -60,6 +64,9 @@ dirs_info:
     owner: "{{ pg_os_user }}"
   - path: "{{ pg_wals_from_pri }}"
     mode: "0700"
+    owner: "{{ pg_os_user }}"
+  - path: "{{ pg_scripts }}"
+    mode: "0774"
     owner: "{{ pg_os_user }}"
 
 # pg service name
@@ -124,4 +131,12 @@ rep_user_pass: !vault |
           33393336396539613438626233366564323130613531663133306338613833623063393264636337
           6462326533356366380a613664636533643636343935353362323236636563616336323338326239
           3435
+
+
+# The inventory alias/group name for the backup host (so we don't need to change it in diffrent network - only on inventory)
+backup_host: "backup_host"
+# The location for the monitoring scripts on the backup host
+monitor_scripts_loc: "/backup/postgres/Dumps/Scripts"
+# The monitoring replication script full path on backup host
+rep_monitor_hosts_file: "{{ monitor_scripts_loc }}/hosts_for_replication_monitoring.txt"
 

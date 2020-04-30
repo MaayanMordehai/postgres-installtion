@@ -1,4 +1,6 @@
 ---
+pg_major_version: "{{ ((pg_full_version|string).split('.'))[0] }}"
+
 pg_repo_info:
   name: "pg{{ pg_major_version }}"
   base_url: "file:///rpm/{{ pg_major_version }}/redhat/pg{{ pg_major_version }}"

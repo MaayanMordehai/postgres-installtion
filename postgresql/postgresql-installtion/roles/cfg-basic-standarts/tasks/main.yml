@@ -22,7 +22,9 @@
                           | int ] \
                           | min \
                           | string + \"MB\" }}"
-  tags: pg-restart-prms
+  tags: 
+    - pg-restart-prms
+    - pg-prms
 
 - name: "adding the params to the param list with the standart value"
   set_fact:
@@ -91,6 +93,7 @@
     name: "{{ pg_admin_user }}"
     password: "{{ admin_user_pass }}"
     encrypted: yes
+  no_log: yes
   become_user: "{{ pg_os_user }}"
   environment:
     PGDATA: "{{ pg_data }}"

@@ -1,9 +1,10 @@
+---
 - hosts: "{{ cluster_name }}"
   remote_user: "{{ rmt_user }}"
   become: yes
   any_errors_fatal: yes
   gather_facts: no
-  tasks:
+  pre_tasks:
 
     - name: "getting postgres replication info"
       postgresql_info:
@@ -11,38 +12,38 @@
       register: pg_info
       when: inventory_hostname == primary_host
       become_user: "{{ pg_os_user }}"
-      tags: chk-rep
 
     - name: setting parameter as the list of the replicated hosts
       set_fact:
         replicated_hosts: "{{ hostvars[primary_host].pg_info.replications.values() \
                               | map(attribute='client_hostname') \
                               | list }}"
-      tags: chk-rep
+
+    - name: "Make sure standby is down before the sync"
+      systemd:
+        name: "{{ pg_srv_name }}"
+        state: stopped
+      when:
+        - inventory_hostname != primary_host
+        - inventory_hostname not in replicated_hosts
+      tags:
+       - rmt-pg-bck
+       - resync-standby
+
+  tasks:
 
     - name: "Create replication user"
       postgresql_user:
         db: "{{ pg_db }}"
         name: "{{ rep_user_name }}"
         password: "{{ rep_user_pass }}"
-        role_attr_flags: "REPLICATION" #"SUPERUSER" # change to REPLICATION ?
+        role_attr_flags: "REPLICATION" 
+      no_log: yes
       become_user: "{{ pg_os_user }}"
       environment:
         PGDATA: "{{ pg_data }}"
       when: inventory_hostname == primary_host
       tags: rep-user
-
-    - name: "Make sure standby is down before the sync"
-      systemd:
-        name: "{{ pg_srv_name }}"
-        state: stopped
-      when: 
-        - inventory_hostname != primary_host
-        - inventory_hostname not in replicated_hosts
-      tags:
-       - rmt-pg-bck
-       - initiate-standby
-       - resync-standby
 
     - import_role:
         name: rmt-pg-bck
@@ -54,7 +55,6 @@
         - inventory_hostname not in replicated_hosts
       tags:
         - rmt-pg-bck
-        - initiate-standby
         - resync-standby
 
     - import_role:
@@ -62,6 +62,8 @@
       tags: 
         - cfg-replica
         - resync-standby
+
+  post_tasks:
 
     - name: "Make sure the new standby is started after the configurarion change"
       systemd:
@@ -72,3 +74,12 @@
         - inventory_hostname not in replicated_hosts
       tags: resync-standby
 
+    - name: "adding the new repica to replication monitoring"
+      lineinfile:
+        path: "{{ rep_monitor_hosts_file }}"
+        line: "placeholder;{{ primary_host }},{{ replicated_hosts[0] }}"
+        state: present
+      delegate_to: "{{ backup_host }}"
+      run_once: yes
+      tags: rep-mon
+...

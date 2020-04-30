@@ -1,3 +1,4 @@
+---
 ## CHILD PLAY - INSTALL POSTGRESQL STANDALONE ##
 - hosts: "{{ primary_host|default(cluster_name) }}"
   remote_user: "{{ rmt_user }}"
@@ -27,4 +28,4 @@
     - import_role:
         name: add-extentions
       tags: add-extentions
-
+...

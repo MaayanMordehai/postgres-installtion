@@ -1,5 +1,6 @@
 ---
-default_tablespace: "app_tbs"
+# The value for this parameter must not contain tb, mb or gb when ansible version < 2.9.8 because of a bug in the postgresql_set
+default_tablespace: "app_tablespace"
 
 def_tbs_dir: "{{ pg_tbs }}/{{ default_tablespace }}"
 

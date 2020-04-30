@@ -1,0 +1,9 @@
+---
+pg_data: "/postgres/{{ pg_major_version }}/data"
+
+pg_srv_name: "postgresql-{{ pg_major_version }}"
+
+pg_bin: "/usr/pgsql-{{ pg_major_version }}/bin"
+
+pg_os_user: "postgres"
+...

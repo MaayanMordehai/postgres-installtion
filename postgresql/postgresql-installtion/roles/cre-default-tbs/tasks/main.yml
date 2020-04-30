@@ -5,16 +5,7 @@
     state: directory
     mode: "0700"
   become_user: "{{ pg_os_user }}"
-  tags: tbs-dir
-
-- name: "changing the pg parameters in postgresql.conf"
-  lineinfile:
-    path: "{{ pg_data }}/postgresql.conf"
-    insertafter: "^(#default_tablespace=|#default_tablespace =|# default_tablespace=|# default_tablespace =)"
-    regexp: "^(default_tablespace=|default_tablespace =)"
-    line: "default_tablespace = {{ default_tablespace }}"
-  notify: Reload pg
-  tags: def-tbs-param
+  tags: new-tbs
 
 - name: "defining the new tablespace"
   postgresql_tablespace:
@@ -23,7 +14,14 @@
   become_user: "{{ pg_os_user }}"
   environment:
     PGDATA: "{{ pg_data }}"
-  tags: tbs-define
+  tags: new-tbs
+
+- name: "changing the pg default tablespace parameter in postgresql.auto.conf"
+  postgresql_set:
+    name: "default_tablespace"
+    value: "{{ default_tablespace }}"
+  notify: Reload pg
+  tags: def-tbs
 
 #
 ## THIS TASK WILL WORK FOR ANSIBLE 2.9
@@ -41,20 +39,26 @@
 #    PGDATA: "{{ pg_data }}"
 #  tags: change
 
-- name: "checking default tablespace"
-  command: "{{ pg_bin }}/psql -c \"show default_tablespace\" --no-align -t"
-  register: tablespace_output
+- name: "check template db tablespace"
+  postgresql_query:
+    query: SELECT t.spcname as "tablespace" 
+           FROM pg_catalog.pg_database d 
+           JOIN pg_catalog.pg_tablespace t on d.dattablespace = t.oid 
+           WHERE d.datname = %(template)s
+    named_args:
+      template: "{{ template_db }}"
+  register: tablespace_check
   become_user: "{{ pg_os_user }}"
   environment:
     PGDATA: "{{ pg_data }}"
-  changed_when: false
-  tags: tbs-define
+  tags: def-tbs
 
+# not using the postgresql_query because it can not handle identifiers
 - name: "changing the given databases to the new tablespace"
-  command: "{{ pg_bin }}/psql -c \"alter database {{ template_db }} set tablespace {{ default_tablespace }};\""
-  when: default_tablespace != tablespace_output.stdout
+  command: "{{ pg_bin }}/psql -c 'alter database \"{{ template_db }}\" set tablespace \"{{ default_tablespace }}\";'"
+  when: default_tablespace != tablespace_check.query_result[0].tablespace
   become_user: "{{ pg_os_user }}"
   environment:
     PGDATA: "{{ pg_data }}"
-  tags: tbs-define
+  tags: def-tbs
 ...

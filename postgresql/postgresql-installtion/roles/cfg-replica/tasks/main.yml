@@ -102,4 +102,14 @@
     PGDATA: "{{ pg_data }}"
   notify: Reload pg
   tags: pg-hba
+
+- name: "preper for switchover/failover - add the switchover/failover scripts"
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ pg_scripts }}/{{ item }}"
+    force: no
+  loop:
+    - "DO_NOT_RUN_PRIMARY_IS_DEAD.sh"
+    - "Promote_STBY_Run_From_Primary.sh"
+  tags: prep-switch
 ...

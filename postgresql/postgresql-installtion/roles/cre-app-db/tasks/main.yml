@@ -11,6 +11,7 @@
     password: "{{ app_user_pass }}"
     encrypted: yes
     priv: "CONNECT/TEMPORARY/CREATE"
+  no_log: yes
   tags: app-user
 
 - name: revoke all on app database from public
@@ -21,7 +22,7 @@
     objs: "{{ app_db_name }}"
     role: public
     state: absent
-  tags: privs
+  tags: app-db
 
 - name: revoke all on schema public from public
   postgresql_privs:
@@ -31,7 +32,7 @@
     objs: public
     role: public
     state: absent
-  tags: privs
+  tags: app-db
 
 - name: grant usage on schema public to app user
   postgresql_privs:
@@ -41,5 +42,5 @@
     objs: public
     role: "{{ app_user_name }}"
     state: present
-  tags: privs
+  tags: app-user
 ...
