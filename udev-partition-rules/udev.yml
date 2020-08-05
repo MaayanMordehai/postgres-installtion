@@ -1,9 +1,0 @@
-- hosts: "{{ cluster_name }}"
-  remote_user: root
-  gather_facts: no
-  tasks:
-
-    - import_role:
-        name: prep-disks-app
-      when: app|bool
-      tags: udev-maping

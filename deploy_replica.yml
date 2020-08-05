@@ -73,13 +73,4 @@
         - inventory_hostname != primary_host
         - inventory_hostname not in replicated_hosts
       tags: resync-standby
-
-    - name: "adding the new repica to replication monitoring"
-      lineinfile:
-        path: "{{ rep_monitor_hosts_file }}"
-        line: "placeholder;{{ primary_host }},{{ replicated_hosts[0] }}"
-        state: present
-      delegate_to: "{{ backup_host }}"
-      run_once: yes
-      tags: rep-mon
 ...

@@ -1,11 +1,5 @@
-Not changing code:
-- replication - check with moti why in noual the replication user role is superuser and not replication.
-- replication file - check why in noual we put in there password even after adding to pg_hba the replictor trust and the servers.
-
-Testing that might require change:
-- cfg-replica role - need to make sure the omit with notify handler works and not start the handler, if not change the role accurdingly :(
-- check if the parameters pg_admin_user and admin_user_pass are needed in the play group vars or should be in the roles defaults/vars - if not needed in the group vars change and also change in the main readme
-
+- add support for postgres 12
+- change the inst-rpms to add the repo to /etc/yum.repos.d and then install normally
 
 READMES:
 ---------

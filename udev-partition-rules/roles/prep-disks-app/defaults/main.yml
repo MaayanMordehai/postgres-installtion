@@ -1,3 +1,0 @@
-app_disk: "/dev/sdb"
-
-app_partitions_and_dest: { "1": "data1p1", "2": "fra1p1", "3": "grid1p1", "4": "grid2p1", "5": "grid3p1" }
