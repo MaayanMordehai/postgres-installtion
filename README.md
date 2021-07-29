@@ -1,5 +1,5 @@
 # DEPLOY POSTGRESQL
-This was created for diffrent network and not internet.
+This was created for diffrent network - so you might see some wired stuff like in the rpms installtion repos.
 
 This deployment is divided to playbooks. We have the master play and the childs that run after.
 The playbooks flow is this: 
